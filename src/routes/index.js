@@ -3,6 +3,7 @@ import Information from '@/pages/Information';
 import Test from '@/pages/Test';
 import NotFound from '@/pages/NotFound';
 import { Navigate } from 'react-router-dom';
+import MemberManager from '@/pages/Member';
 
 const routeConfig = [
   {
@@ -19,7 +20,7 @@ const routeConfig = [
       },
       {
         path: '/member',
-        element: <Information />,
+        element: <MemberManager />,
       },
       {
         path: '/movie',
