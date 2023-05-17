@@ -1,6 +1,7 @@
 
-import {  Button, Form, Input, Popconfirm, Table  } from 'antd';
-import {  useContext, useEffect, useRef, useState, createContext } from 'react';
+import { Button, Col, Form, Input, Modal, Popconfirm, Row, Table } from 'antd';
+import { useContext, useEffect, useRef, useState, createContext } from 'react';
+import MemberInfo from './Components/info';
 const EditableContext = createContext(null);
 const EditableRow = ({ index, ...props }) => {
   const [form] = Form.useForm();
@@ -82,15 +83,19 @@ const MemberManager = () => {
   const [dataSource, setDataSource] = useState([
     {
       key: '0',
-      name: 'Edward King 0',
-      age: '32',
-      address: 'London, Park Lane no. 0',
-    },
-    {
+      email: 'aaa@CineK.com',
+      nickName: 'alixe',
+      permission: '一般會員'
+    }, {
       key: '1',
-      name: 'Edward King 1',
-      age: '32',
-      address: 'London, Park Lane no. 1',
+      email: 'aaBa@CineK.com',
+      nickName: 'alixeA',
+      permission: '一般會員'
+    }, {
+      key: '2',
+      email: 'aaaC@CineK.com',
+      nickName: 'alixeB',
+      permission: '一般會員'
     },
   ]);
   const [count, setCount] = useState(2);
@@ -98,39 +103,41 @@ const MemberManager = () => {
     const newData = dataSource.filter((item) => item.key !== key);
     setDataSource(newData);
   };
+  const [isModalOpen, setIsModalOpen] = useState(false);
   const defaultColumns = [
     {
-      title: 'name',
-      dataIndex: 'name',
+      title: <div style={{ textAlign: 'center' }}>帳號</div>,
+      dataIndex: 'email',
       width: '30%',
       editable: true,
+      render: (text) => <div style={{ textAlign: 'center' }}>{text}</div>
     },
     {
-      title: 'age',
-      dataIndex: 'age',
+      title: <div style={{ textAlign: 'center' }}>姓名</div>,
+      dataIndex: 'nickName',
+      render: (text) => <div style={{ textAlign: 'center' }}>{text}</div>
     },
     {
-      title: 'address',
-      dataIndex: 'address',
+      title: <div style={{ textAlign: 'center' }}>會員權限</div>,
+      dataIndex: 'permission',
+      render: (text) => <div style={{ textAlign: 'center' }}>{text}</div>
     },
     {
-      title: 'operation',
+      title: <div style={{ textAlign: 'center' }}>編輯</div>,
       dataIndex: 'operation',
       render: (_, record) =>
-        dataSource.length >= 1 ? (
-          <Popconfirm title="Sure to delete?" onConfirm={() => handleDelete(record.key)}>
-            <a>Delete</a>
-          </Popconfirm>
+        dataSource.length >= 1 ? (<div style={{ textAlign: 'center' }}>
+          <a onClick={() => setIsModalOpen(true)}>編輯</a></div>
         ) : null,
     },
   ];
   const handleAdd = () => {
     const newData = {
       key: count,
-      name: `Edward King ${count}`,
-      age: '32',
-      address: `London, Park Lane no. ${count}`,
-    };
+      email: 'aaa@CineK.com',
+      nickName: 'alixe',
+      permission: '一般會員',
+    }
     setDataSource([...dataSource, newData]);
     setCount(count + 1);
   };
@@ -166,16 +173,17 @@ const MemberManager = () => {
     };
   });
   return (
-    <div>
-      <Button
-        onClick={handleAdd}
-        type="primary"
-        style={{
-          marginBottom: 16,
-        }}
-      >
-        Add a row
-      </Button>
+    <div style={{margin:"auto 5%", width:'90%'}}>
+      <div>會員列表</div>
+      <div style={{ display: 'flex', justifyContent: 'flex-end' }}>
+        <Button
+          onClick={handleAdd}
+          type="primary"
+          style={{
+            marginBottom: 16
+          }}
+        >新增會員</Button>
+      </div>
       <Table
         components={components}
         rowClassName={() => 'editable-row'}
@@ -183,6 +191,9 @@ const MemberManager = () => {
         dataSource={dataSource}
         columns={columns}
       />
+      <Modal width={'80%'} open={isModalOpen} onCancel={() => setIsModalOpen(false)}>
+        <MemberInfo />
+      </Modal>
     </div>
   );
 };

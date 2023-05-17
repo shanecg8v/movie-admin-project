@@ -13,7 +13,7 @@ function Layout() {
       <div
         className={clsx('content', {
           noPdTop: noPdTopListArr.includes(pathname),
-        })}
+        })} style={{ width:'100%' }}
       >
         <Outlet />
       </div>
