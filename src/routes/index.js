@@ -4,6 +4,7 @@ import Test from '@/pages/Test';
 import NotFound from '@/pages/NotFound';
 import { Navigate } from 'react-router-dom';
 import MemberManager from '@/pages/Member';
+import Movie from '@/pages/Movie';
 
 const routeConfig = [
   {
@@ -24,7 +25,7 @@ const routeConfig = [
       },
       {
         path: '/movie',
-        element: <Test />,
+        element: <Movie />,
       },
       {
         path: '/movieShelf',
