@@ -68,9 +68,6 @@ const EditableCell = ({
     ) : (
       <div
         className="editable-cell-value-wrap"
-        style={{
-          paddingRight: 24,
-        }}
         onClick={toggleEdit}
       >
         {children}
