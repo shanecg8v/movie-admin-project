@@ -5,6 +5,7 @@ import NotFound from '@/pages/NotFound';
 import { Navigate } from 'react-router-dom';
 import MemberManager from '@/pages/Member';
 import Movie from '@/pages/Movie';
+import MovieShelf from '@/pages/MovieShelf';
 
 const routeConfig = [
   {
@@ -29,7 +30,7 @@ const routeConfig = [
       },
       {
         path: '/movieShelf',
-        element: <Test />,
+        element: <MovieShelf />,
       },
       {
         path: '/theater',
