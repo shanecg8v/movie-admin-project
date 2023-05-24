@@ -18,10 +18,12 @@ const BASE_URL =
 const SYSTEM_NAME = process.env.REACT_APP_NAME || "test";
 
 export default async (propsConfig) => {
+  console.log(999, PRODUCT_URL)
   const { customBaseUrl = "", url = "" } = propsConfig;
   const loadingId = uuidv4();
   const instance = axios.create({
-    baseURL: customBaseUrl === "" ? BASE_URL : customBaseUrl,
+    // baseURL: customBaseUrl === "" ? BASE_URL : customBaseUrl,
+    baseURL: 'https://movie-service-d1vx.onrender.com/api',
     headers: { common: {} },
   });
   const { dispatch = () => {} } = store;
