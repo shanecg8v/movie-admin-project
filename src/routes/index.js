@@ -6,6 +6,8 @@ import { Navigate } from 'react-router-dom';
 import MemberManager from '@/pages/Member';
 import Movie from '@/pages/Movie';
 import MovieShelf from '@/pages/MovieShelf';
+import Theater from '@/pages/theater';
+import RoomsIndex from '@/pages/theater/roomsIndex';
 
 const routeConfig = [
   {
@@ -34,11 +36,11 @@ const routeConfig = [
       },
       {
         path: '/theater',
-        element: <Test />,
+        element: <Theater />,
       },
       {
         path: '/room',
-        element: <Test />,
+        element: <RoomsIndex />,
       },
       {
         path: '/seat',
