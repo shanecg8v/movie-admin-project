@@ -2,6 +2,7 @@ import axios from 'axios';
 import { v4 as uuidv4 } from 'uuid';
 import Cookies from 'js-cookie';
 import { setClearMaskArr, setMaskArr } from '../store/slice/maskSlice';
+import { message } from "antd";
 
 let store = {};
 export const injectStore = (_store) => {
@@ -58,6 +59,9 @@ export default async (propsConfig) => {
       return response;
     },
     (e) => {
+      console.log('e',e);
+      const { message: errorMessage } = e.response.data;
+      message.error(errorMessage);
       dispatch(setClearMaskArr(loadingId));
       return Promise.reject(e);
     }

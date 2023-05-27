@@ -2,22 +2,24 @@ import { Outlet } from 'react-router-dom';
 import { useLocation } from 'react-router-dom';
 import clsx from 'clsx';
 import Sidebar from './Sidebar';
+import { Layout, Button, Dropdown } from "antd";
+import MyHeader from './Header';
 
-function Layout() {
-  const { pathname } = useLocation();
-  const noPdTopListArr = ['/home']; //首頁header有蓋住內容，所以有蓋住內容的樣式統一這邊設定
+
+const { Header, Content, Footer, Sider } = Layout;
+
+function MyLayout() {
 
   return (
     <div className="wrapper d-flex align-items-stretch">
       <Sidebar />
-      <div
-        className={clsx('content', {
-          noPdTop: noPdTopListArr.includes(pathname),
-        })} style={{ width:'100%' }}
-      >
-        <Outlet />
-      </div>
+      <Layout>
+        <MyHeader/>
+        <Content>
+          <Outlet />
+        </Content>
+      </Layout>
     </div>
   );
 }
-export default Layout;
+export default MyLayout;

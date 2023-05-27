@@ -4,7 +4,7 @@
   "private": true,
   "homepage": "https://shanecg8v.github.io/movie-admin-project",
   "dependencies": {
-    "@ant-design/icons": "^5.1.0",
+    "@ant-design/icons": "^5.1.3",
     "@ebay/nice-modal-react": "^1.2.10",
     "@reduxjs/toolkit": "^1.9.3",
     "@testing-library/jest-dom": "^5.16.5",
@@ -28,6 +28,7 @@
     "react-scripts": "5.0.1",
     "sass": "^1.62.0",
     "sort-by": "^1.2.0",
+    "styled-components": "^5.3.11",
     "uuidv4": "^6.2.13",
     "web-vitals": "^2.1.4"
   },
