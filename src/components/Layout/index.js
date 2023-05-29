@@ -4,9 +4,14 @@ import clsx from 'clsx';
 import Sidebar from './Sidebar';
 import { Layout, Button, Dropdown } from "antd";
 import MyHeader from './Header';
+import styled from 'styled-components';
 
 
 const { Header, Content, Footer, Sider } = Layout;
+
+const MyContent = styled(Content)`
+padding:15px 10px;
+`
 
 function MyLayout() {
 
@@ -15,9 +20,9 @@ function MyLayout() {
       <Sidebar />
       <Layout>
         <MyHeader/>
-        <Content>
+        <MyContent>
           <Outlet />
-        </Content>
+        </MyContent>
       </Layout>
     </div>
   );
