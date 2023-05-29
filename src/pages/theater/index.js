@@ -2,13 +2,19 @@ import { Button, Table, Divider, Card, Col, DatePicker, Form, Row, Select, Space
 import { useEffect, useState } from "react";
 import { apiTheater } from '@/api';
 import TheaterEdit from './Components/TheaterEdit'
+import { useId } from 'react'
+import _ from 'lodash'
 
 const { getTheaterList } = apiTheater
+
 const Theater = () => {
+  // const id = useId();
   const [isModalOpen, setIsModalOpen] = useState(false)
+  const [tadate, setTadate] = useState(null)
   useEffect(() => {
-    getTheaterList().then(i=>{
-      console.log(i)
+    getTheaterList().then(({data}) => {
+      console.log(data)
+      setTadate(data.data)
     })
 
   }, [])
@@ -16,44 +22,32 @@ const Theater = () => {
   const columns = [
     {
       title: '影城',
-      dataIndex: 'theater',
+      dataIndex: 'name',
+      key: 'name'
     },
     {
-      title: '座位',
-      dataIndex: 'seats',
+      title: '影廳數量',
+      dataIndex: 'roomCount',
+      key: _.uniqueId('roomCount')
+    },
+    {
+      title: '座位總數',
+      dataIndex: 'seatCount',
+      key: _.uniqueId('seatCount')
+
     },
     {
       title: '新增',
-      dataIndex: 'rooms',
+      dataIndex: '_id',
       width: 400,
-      render: () => (
+      render: (item, i) => (
         <>
-          <Button className="me-3">新增影廳</Button>
+          <Button className="me-3" key={i}>新增影廳</Button>
           <Button>編輯</Button>
         </>
       )
     },
-    // {
-    //   title: '編輯',
-    //   dataIndex: 'rditTheater',
-    // },
   ];
-
-  const data = [
-    {
-      theater: '台北影城',
-      seats: '5廳1200',
-      rooms: 32,
-      rditTheater: 'New York No. 1 Lake Park',
-    },
-    {
-      theater: '台北影城',
-      seats: '5廳1200',
-      rooms: 32,
-      rditTheater: 'New York No. 1 Lake Park',
-    },
-  ];
-
 
   return (
     <div style={{ margin: "3%", width: '90%' }}>
@@ -77,8 +71,9 @@ const Theater = () => {
         <Table 
           rowClassName={() => 'editable-row'}
           bordered
-          dataSource={data}
+          dataSource={tadate}
           columns={columns}
+          key={_.uniqueId(tadate)}
         />
       </>
     }

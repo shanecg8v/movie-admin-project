@@ -6,12 +6,12 @@ import TheaterEdit from './Components/TheaterEdit'
 const { getTheaterList } = apiTheater
 const Theater = () => {
   const [isModalOpen, setIsModalOpen] = useState(false)
-  useEffect(() => {
-    getTheaterList().then(i=>{
-      console.log(i)
-    })
+  // useEffect(() => {
+  //   getTheaterList().then(i=>{
+  //     console.log(i)
+  //   })
 
-  }, [])
+  // }, [])
 
   const columns = [
     {
