@@ -1,4 +1,5 @@
 import { Button, Card, Col, DatePicker, Form, Row, Select, Space, Tag } from "antd"
+import { memberGetAll } from "../../api/member"
 
 
 
@@ -18,6 +19,12 @@ const MovieShelf = () => {
 
   const chg = () => {
 
+  }
+
+  const testClick = ()=>{
+    memberGetAll()
+    .then(e=>console.log('T',e))
+    .catch(e=>console.log('F',e))
   }
 
   return (<div style={{ width: '90%', margin: 'auto' }}>
@@ -67,6 +74,8 @@ const MovieShelf = () => {
           <Button htmlType="submit">儲存</Button>
         </div>
       </Form.Item>
+      
+      <Button onClick={testClick}>Test</Button>    
     </div>
   </div>)
 }
