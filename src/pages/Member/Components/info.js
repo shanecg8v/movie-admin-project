@@ -1,62 +1,60 @@
-import { Button, Col, Divider, Layout, List, Row, Typography } from "antd"
+import { Button, Col, Layout, List, Row } from "antd"
 import Sider from "antd/es/layout/Sider"
 import { Content } from "antd/es/layout/layout"
-import { useState } from "react"
+import { useEffect, useState } from "react"
+import { selectMember } from "../../../store/slice/memberSlice"
+import { useSelector } from "react-redux"
 
-const MemberInfo = () => {
-
-  const [permission,setPermission] = useState(false)
-
+const MemberInfo = ({ index, setData }) => {
+  const info = useSelector(selectMember)[index]
+  const [permission, setPermission] = useState(info.roles.includes('admin'))
   const dataL = [
-    { name: '帳號', value: "vvvvv" },
-    { name: '姓名', value: "vvvvv" },
-    { name: '電話', value: "vvvvv" },
-    { name: '會員點數', value: "vvvvv" },
-    { name: '權限', value: permission }
+    { name: '帳號', value: info.email },
+    { name: '姓名', value: info.name == undefined ? "" : info.name },
+    { name: '電話', value: info.phone == undefined ? "" : info.phone },
+    { name: '會員點數', value: info.bonus == undefined ? "" : info.bonus },
+    { name: '權限', value: permission },
+    { name: 'id', value: info._id }
   ]
-
-  const data = [
-    '消費紀錄1',
-    '消費紀錄2',
-    '消費紀錄3',
-    '消費紀錄4',
-    '消費紀錄5',
-  ];
-  const permissionChg = ()=>{
+  const permissionChg = () => {
     setPermission(!permission)
+    setData({...info, roles:!permission ? ['user', 'admin'] : ['user']})
   }
 
-
-  return <Layout style={{marginTop:"20px"}}>
-      <Sider style={{ margin: "auto", background: "inherit" }}>
+  return <Row>
+    <Col span={8}>
+      <Sider style={{ margin: "auto", marginTop: 30, background: "inherit" }}>
         {dataL.map(d =>
-          <div key={d.name} style={{ margin: "auto", marginTop: "10px", width: "70%" }}>
-            {d.name=="權限"?
-            <a style={{ display: 'flex', justifyContent: 'center', alignItems: 'center' }} onClick={permissionChg}>{`${d.name}:${permission?"管理者":"一般會員"}`}</a>:
-            <div style={{ display: 'flex', justifyContent: 'center', alignItems: 'center' }}>{`${d.name}:${d.value}`}</div>
+          <div key={d.name} style={{ margin: "auto", marginTop: "10px" }}>
+            {d.name == "權限" ?
+              <a style={{ display: 'flex', justifyContent: 'center', alignItems: 'center' }} onClick={permissionChg}>{`${d.name}:${d.value ? '後臺管理員' : '一般會員'}`}</a> :
+              <div style={{ display: 'flex', justifyContent: 'center', alignItems: 'center' }}>{`${d.name}:${d.value}`}</div>
             }
             <div style={{ borderBottom: '1px solid', height: '10px' }}></div>
           </div>
         )}
       </Sider>
-      <Content >
+    </Col>
+    <Col span={16}>
+      <Content>
         <Layout.Header style={{ background: "inherit" }}>消費紀錄</Layout.Header>
         <Layout>
-          
-        <List
-          header={<>日期<Button style={{margin:"auto 10px"}}>開始日期</Button><Button>結束日期</Button></>}
-          footer={<div></div>}
-          bordered
-          dataSource={data}
-          renderItem={(item) => (
-            <List.Item>
-              {item}
-            </List.Item>
-          )}
-        />
+          <List
+            header={<>日期<Button style={{ margin: "auto 10px" }}>開始日期</Button><Button>結束日期</Button></>}
+            footer={<div></div>}
+            bordered
+            dataSource={info.orderId}
+            renderItem={(item) => (
+              <List.Item key={item.orderId} style={{ display: "flex" }}>
+                <div>{`訂單編號:${item.orderId}`}</div>
+                <div>{`消費:${item.price}`}</div>
+              </List.Item>
+            )}
+          />
         </Layout>
       </Content>
-  </Layout>
+    </Col>
+  </Row>
 }
 
 export default MemberInfo

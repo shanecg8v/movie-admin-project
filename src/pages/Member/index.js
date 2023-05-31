@@ -1,7 +1,11 @@
 
-import { Button, Col, Form, Input, Modal, Popconfirm, Row, Table } from 'antd';
-import { useContext, useEffect, useRef, useState, createContext } from 'react';
+import { Button, Form, Input, Modal, Table } from 'antd';
+import { useContext, useEffect, useState, createContext, useRef } from 'react';
 import MemberInfo from './Components/info';
+import { apiMemberGetAll, apiMemberAdd, apiMemberRemove, apiMemberUpdate, apiMovieGetAll, apiMovieAdd, apiMovieUpdate, apiMovieRemove } from '../../api';
+import { useDispatch, useSelector } from 'react-redux';
+import { selectMember, setMember, setMembers } from '../../store/slice/memberSlice';
+
 const EditableContext = createContext(null);
 const EditableRow = ({ index, ...props }) => {
   const [form] = Form.useForm();
@@ -13,183 +17,126 @@ const EditableRow = ({ index, ...props }) => {
     </Form>
   );
 };
-const EditableCell = ({
-  title,
-  editable,
-  children,
-  dataIndex,
-  record,
-  handleSave,
-  ...restProps
-}) => {
+const EditableCell = ({ title, editable, children, dataIndex, record, handleSave, ...restProps }) => {
   const [editing, setEditing] = useState(false);
   const inputRef = useRef(null);
   const form = useContext(EditableContext);
-  useEffect(() => {
-    if (editing) {
-      inputRef.current.focus();
-    }
-  }, [editing]);
+  useEffect(() => { if (editing) inputRef.current.focus(); }, [editing]);
   const toggleEdit = () => {
     setEditing(!editing);
-    form.setFieldsValue({
-      [dataIndex]: record[dataIndex],
-    });
+    form.setFieldsValue({ [dataIndex]: record[dataIndex], });
   };
   const save = async () => {
     try {
       const values = await form.validateFields();
       toggleEdit();
-      handleSave({
-        ...record,
-        ...values,
-      });
+      handleSave({ ...record, ...values, });
     } catch (errInfo) {
       console.log('Save failed:', errInfo);
     }
   };
   let childNode = children;
   if (editable) {
-    childNode = editing ? (
-      <Form.Item
-        style={{
-          margin: 0,
-        }}
-        name={dataIndex}
-        rules={[
-          {
-            required: true,
-            message: `${title} is required.`,
-          },
-        ]}
-      >
+    childNode = editing ?
+      <Form.Item style={{ margin: 0 }} name={dataIndex} rules={[{ required: true, message: `${title} is required.` }]}>
         <Input ref={inputRef} onPressEnter={save} onBlur={save} />
-      </Form.Item>
-    ) : (
-      <div
-        className="editable-cell-value-wrap"
-        onClick={toggleEdit}
-      >
+      </Form.Item> :
+      <div className="editable-cell-value-wrap" onClick={toggleEdit} >
         {children}
       </div>
-    );
   }
   return <td {...restProps}>{childNode}</td>;
 };
+
 const MemberManager = () => {
-  const [dataSource, setDataSource] = useState([
-    {
-      key: '0',
-      email: 'aaa@CineK.com',
-      nickName: 'alixe',
-      permission: '一般會員'
-    }, {
-      key: '1',
-      email: 'aaBa@CineK.com',
-      nickName: 'alixeA',
-      permission: '一般會員'
-    }, {
-      key: '2',
-      email: 'aaaC@CineK.com',
-      nickName: 'alixeB',
-      permission: '一般會員'
-    },
-  ]);
-  const [count, setCount] = useState(2);
-  const handleDelete = (key) => {
-    const newData = dataSource.filter((item) => item.key !== key);
-    setDataSource(newData);
-  };
-  const [isModalOpen, setIsModalOpen] = useState(false);
+  useEffect(() => {
+    apiMemberGetAll(1, 10)
+      .then(e => {
+        const data = e?.data.data.map((d, i) => {
+          return {
+            ...d,
+            key: i
+          }
+        })
+        updateMembers(data)
+      })
+      .catch(e => console.log('err', e))
+  }, [])
+
+  const [userIndex, setUserIndex] = useState(-1);
   const defaultColumns = [
     {
       title: <div style={{ textAlign: 'center' }}>帳號</div>,
       dataIndex: 'email',
-      width: '30%',
-      editable: true,
-      render: (text) => <div style={{ textAlign: 'center' }}>{text}</div>
+      render: (data) => <div style={{ textAlign: 'center' }}>{data}</div>
     },
     {
       title: <div style={{ textAlign: 'center' }}>姓名</div>,
-      dataIndex: 'nickName',
-      render: (text) => <div style={{ textAlign: 'center' }}>{text}</div>
+      dataIndex: 'name',
+      render: (data) => <div style={{ textAlign: 'center' }}>{data}</div>
     },
     {
       title: <div style={{ textAlign: 'center' }}>會員權限</div>,
-      dataIndex: 'permission',
-      render: (text) => <div style={{ textAlign: 'center' }}>{text}</div>
+      dataIndex: 'roles',
+      render: (data) => <div style={{ textAlign: 'center' }}>{data.includes('admin') ? '後臺管理員' : '一般會員'}</div>
     },
     {
       title: <div style={{ textAlign: 'center' }}>編輯</div>,
       dataIndex: 'operation',
       render: (_, record) =>
-        dataSource.length >= 1 ? (<div style={{ textAlign: 'center' }}>
-          <a onClick={() => setIsModalOpen(true)}>編輯</a></div>
+        rdData.length >= 1 ? (<div style={{ textAlign: 'center' }}>
+          <a onClick={() => { setUserIndex(record.key) }}>編輯</a></div>
         ) : null,
     },
   ];
-  const handleAdd = () => {
-    const newData = {
-      key: count,
-      email: 'aaa@CineK.com',
-      nickName: 'alixe',
-      permission: '一般會員',
-    }
-    setDataSource([...dataSource, newData]);
-    setCount(count + 1);
-  };
-  const handleSave = (row) => {
-    const newData = [...dataSource];
-    const index = newData.findIndex((item) => row.key === item.key);
-    const item = newData[index];
-    newData.splice(index, 1, {
-      ...item,
-      ...row,
-    });
-    setDataSource(newData);
-  };
-  const components = {
-    body: {
-      row: EditableRow,
-      cell: EditableCell,
-    },
-  };
+  const components = { body: { row: EditableRow, cell: EditableCell } };
   const columns = defaultColumns.map((col) => {
-    if (!col.editable) {
-      return col;
-    }
-    return {
+    if (!col.editable) return col;
+    else return {
       ...col,
       onCell: (record) => ({
         record,
         editable: col.editable,
         dataIndex: col.dataIndex,
         title: col.title,
-        handleSave,
       }),
     };
   });
+
+  //------------------------------------redux
+  const rdData = useSelector(selectMember)
+  const dispatch = useDispatch()
+  const updateMembers = (data) => {
+    dispatch(setMembers(data))
+  }
+  let editData
+  const setEditData = (d) => { editData = d }
+  const modalOk = () => {
+    console.log('modalOk', editData)
+    if (editData != undefined) {
+      apiMemberUpdate(editData._id, editData)
+        .then(e => console.log('7-4T', e?.data.data))
+        .catch(e => console.log('7-4F', e.response.data))
+      dispatch(setMember(editData))
+    }
+    editData = undefined
+    setUserIndex(-1)
+  }
+  const modalCancel = () => {
+    console.log('modalCancel')
+    setUserIndex(-1)
+    editData = undefined
+  }
+
   return (
-    <div style={{margin:"auto 5%", width:'90%'}}>
+    <div style={{ margin: "auto 5%", width: '90%' }}>
       <div>會員列表</div>
       <div style={{ display: 'flex', justifyContent: 'flex-end' }}>
-        <Button
-          onClick={handleAdd}
-          type="primary"
-          style={{
-            marginBottom: 16
-          }}
-        >新增會員</Button>
+        <Button type="primary" style={{ marginBottom: 16 }} >新增會員</Button>
       </div>
-      <Table
-        components={components}
-        rowClassName={() => 'editable-row'}
-        bordered
-        dataSource={dataSource}
-        columns={columns}
-      />
-      <Modal width={'80%'} open={isModalOpen} onCancel={() => setIsModalOpen(false)}>
-        <MemberInfo />
+      <Table components={components} rowClassName={() => 'editable-row'} bordered dataSource={rdData} columns={columns} />
+      <Modal width={'80%'} open={userIndex > -1} onCancel={modalCancel} onOk={modalOk} key={userIndex}>
+        <MemberInfo index={userIndex} setData={setEditData} />
       </Modal>
     </div>
   );
