@@ -7,6 +7,7 @@ import { useDispatch, useSelector } from "react-redux";
 import { selectMovie, setMovies } from "../../store/slice/movieSlice";
 
 const Movie = () => {
+  const [movieIndex, setMovieIndex] = useState(-1);
   useEffect(() => {
     apiMovieGetAll(1, 10)
       .then(e => {
@@ -19,8 +20,7 @@ const Movie = () => {
         updateMovies(data)
       })
       .catch(e => console.log('err', e))
-  }, [])
-  const [movieIndex, setMovieIndex] = useState(-1);
+  }, [movieIndex])
   const rdData = useSelector(selectMovie)
   const dispatch = useDispatch()
   const updateMovies = (data) => {
@@ -85,7 +85,7 @@ const Movie = () => {
   ];
   return (
     <div style={{ margin: "auto 5%", width: '90%' }}>
-      {movieIndex > -1 ? <MovieEdit index={movieIndex} cancelHandler={()=>setMovieIndex(-1)} style={{ marginTop: 20 }} /> : <>
+      {movieIndex > -1 ? <MovieEdit index={movieIndex} cancelHandler={setMovieIndex} style={{ marginTop: 20 }} /> : <>
         <div>新增電影</div>
         <div style={{ display: 'flex', justifyContent: 'flex-end' }}>
           <Dropdown menu={{ items }} trigger={['click']}>

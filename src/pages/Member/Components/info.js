@@ -22,7 +22,7 @@ const MemberInfo = ({ index, setData }) => {
   }
 
   return <Row>
-    <Col span={8} style={{ border: '1px red solid' }}>
+    <Col span={8}>
       <Sider style={{ margin: "auto", marginTop: 30, background: "inherit" }}>
         {dataL.map(d =>
           <div key={d.name} style={{ margin: "auto", marginTop: "10px" }}>

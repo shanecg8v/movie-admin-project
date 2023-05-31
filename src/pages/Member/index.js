@@ -51,7 +51,7 @@ const EditableCell = ({ title, editable, children, dataIndex, record, handleSave
 
 const MemberManager = () => {
   useEffect(() => {
-    Cookies.set(`${process.env.REACT_APP_NAME}_token`, encodeURIComponent('eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJlbWFpbCI6ImExM1haQGdtYWlsLmNvbSIsImlhdCI6MTY4NTE4NTE1OSwiZXhwIjoxNjg1Nzg5OTU5fQ.0xXKOKSQvw85uXWdDTPzWXGPLlv8zPfByaxI_XrgFJo'), { expires: 7, path: '/' })
+    Cookies.set(`${process.env.REACT_APP_NAME}_token`, encodeURIComponent('eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJlbWFpbCI6ImExM1haQGdtYWlsLmNvbSIsImlhdCI6MTY4NTUzODM3MywiZXhwIjoxNjg2MTQzMTczfQ.kasMG6OWwVEIRmrots8r279j7ikdCuW5ZpVyftzWziU'), { expires: 7, path: '/' })
 
     apiMemberGetAll(1, 10)
       .then(e => {
@@ -117,10 +117,7 @@ const MemberManager = () => {
   const modalOk = () => {
     console.log('modalOk', editData)
     if (editData != undefined) {
-      apiMemberUpdate(editData._id, {
-        email: editData.email,
-        enable: editData.roles.includes('admin')
-      })
+      apiMemberUpdate(editData._id, editData)
         .then(e => console.log('7-4T', e?.data.data))
         .catch(e => console.log('7-4F', e.response.data))
       dispatch(setMember(editData))
@@ -144,111 +141,8 @@ const MemberManager = () => {
       <Modal width={'80%'} open={userIndex > -1} onCancel={modalCancel} onOk={modalOk} key={userIndex}>
         <MemberInfo index={userIndex} setData={setEditData} />
       </Modal>
-      <Button onClick={api72}>7-2</Button>
-      <Button onClick={api76}>7-6</Button>
     </div>
   );
 };
-
-const api72 = () => {//page,nums
-  apiMemberGetAll(1, 10)
-    .then(e => console.log('7-2T', e?.data.data))
-    .catch(e => console.log('7-2F', e))
-}
-const api73 = () => {//postData
-  apiMemberAdd({
-    name: "王曉明Aaac",
-    email: "abcAaaC@abc.com",
-    password: "00000000",
-    mobile: "0987654321",
-    hobby: [""],
-    birth: "2023-05-01T10:21:22.164+00:00",
-    enable: true
-  })
-    .then(e => console.log('7-3T', e?.data.data))
-    .catch(e => console.log('7-3F', e.response.data))
-}
-const api74 = () => {//DB id,postData 沒有可以變更權限的欄位
-  apiMemberUpdate('646b7be64d4e376cee8090fd', {
-    name: "王曉明A",
-    email: "abcaXac@abc.com",
-    password: "00000000",
-    mobile: "0987654324",
-    hobby: [""],
-    birth: "2023-05-01T10:21:22.164+00:00",
-    enable: true
-  })
-    .then(e => console.log('7-4T', e?.data.data))
-    .catch(e => console.log('7-4F', e.response.data))
-}
-const api75 = () => {//DB id
-  apiMemberRemove('646b7be64d4e376cee8090fd')
-    .then(e => console.log('7-5T', e?.data.data))
-    .catch(e => console.log('7-5F', e.response.data))
-}
-const api76 = () => {//page,nums
-  apiMovieGetAll(1, 10)
-    .then(e => console.log('7-6T', e?.data.data))
-    .catch(e => console.log('7-6F', e.response.data))
-}
-const api77 = () => {//postData
-  apiMovieAdd({
-    "isAvaliableL": "true",
-    "imgUrl": "img_url",
-    "movieCName": "鬼滅NNN",
-    "movieEName": "ABC",
-    "director": "程偉豪X",
-    "cast": [
-      "許光漢",
-      "林柏宏",
-      "王淨",
-      "蔡振南",
-      "王滿嬌",
-      "庹宗華",
-      "馬念先"
-    ],
-    "inTheatersTime": "2022-03-16",
-    "outOfTheatersTime": "2022-03-16",
-    "movieTime": "125",
-    "rating": "G",
-    "synopsis": "恐同男警吳明翰 (許光漢 飾) ，誤撿地上紅包，沒想到紅包裡的對象是個男的 (林柏宏 飾) ！被迫男男冥婚的明翰，一路衰到底，不但甩不掉冥婚對象，就連警花林子晴 (王淨 飾) 埋線已久的緝毒案，都被他搞砸。為了挽救危機，恐同又怕鬼的明翰，別無選擇，即使人鬼殊途也要和鬼老公毛毛攜手跨界追兇，一場荒謬絕倫、笑中帶淚的旅程就此展開！",
-    "videoUrl": "ssss"
-  })
-    .then(e => console.log('7-7T', e?.data.data))
-    .catch(e => console.log('7-7F', e.response.data))
-}
-const api78 = () => {//DB id,postData
-  apiMovieUpdate('646b801a4d4e376cee809128', {
-    "isAvaliableL": "true",
-    "imgUrl": "img_url",
-    "movieCName": "鬼滅",
-    "movieEName": "ABCDDDD",
-    "director": "程偉豪X",
-    "cast": [
-      "許光漢",
-      "林柏宏",
-      "王淨",
-      "蔡振南",
-      "王滿嬌",
-      "庹宗華",
-      "馬念先"
-    ],
-    "inTheatersTime": "2022-03-16",
-    "outOfTheatersTime": "2022-03-16",
-    "movieTime": "125",
-    "rating": "G",
-    "synopsis": "恐同男警吳明翰 (許光漢 飾) ，誤撿地上紅包，沒想到紅包裡的對象是個男的 (林柏宏 飾) ！被迫男男冥婚的明翰，一路衰到底，不但甩不掉冥婚對象，就連警花林子晴 (王淨 飾) 埋線已久的緝毒案，都被他搞砸。為了挽救危機，恐同又怕鬼的明翰，別無選擇，即使人鬼殊途也要和鬼老公毛毛攜手跨界追兇，一場荒謬絕倫、笑中帶淚的旅程就此展開！",
-    "videoUrl": "ssss"
-  })
-    .then(e => console.log('7-8T', e?.data.data))
-    .catch(e => console.log('7-8F', e.response.data))
-}
-const api79 = () => {//DB id
-  apiMovieRemove('646b801a4d4e376cee809128')
-    .then(e => console.log('7-9T', e?.data.data))
-    .catch(e => console.log('7-9F', e.response.data))
-}
-
-
 
 export default MemberManager
