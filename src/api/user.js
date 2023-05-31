@@ -2,8 +2,8 @@ import axios from '@/utils/axios.js';
 
 export const postLogin = (props) => {
   return axios({
-    url: `/user/login`,
-    method: 'post',
+    url: `/admin/user/login`,
+    method: "POST",
     ...props,
   });
 };

@@ -1,53 +1,61 @@
-import Layout from '@/components/Layout';
-import Information from '@/pages/Information';
-import Test from '@/pages/Test';
-import NotFound from '@/pages/NotFound';
-import { Navigate } from 'react-router-dom';
-import MemberManager from '@/pages/Member';
-import Movie from '@/pages/Movie';
-import MovieShelf from '@/pages/MovieShelf';
+import Layout from "@/components/Layout";
+import Information from "@/pages/Information";
+import Test from "@/pages/Test";
+import NotFound from "@/pages/NotFound";
+import { Navigate } from "react-router-dom";
+import MemberManager from "@/pages/Member";
+import Movie from "@/pages/Movie";
+import MovieShelf from "@/pages/MovieShelf";
+import Theater from "@/pages/theater";
+import RoomsIndex from "@/pages/theater/roomsIndex";
+import Login from "../pages/Login";
+import RouterInterceptor from "./RouterInterceptor";
 
 const routeConfig = [
   {
-    path: '/',
-    element: <Layout />,
+    path: "/",
+    element: <RouterInterceptor inner={<Layout />} />,
     children: [
       {
         index: true,
         element: <Navigate to="/home" />,
       },
       {
-        path: '/home',
+        path: "/home",
         element: <Information />,
       },
       {
-        path: '/member',
+        path: "/member",
         element: <MemberManager />,
       },
       {
-        path: '/movie',
+        path: "/movie",
         element: <Movie />,
       },
       {
-        path: '/movieShelf',
+        path: "/movieShelf",
         element: <MovieShelf />,
       },
       {
-        path: '/theater',
-        element: <Test />,
+        path: "/theater",
+        element: <Theater />,
       },
       {
-        path: '/room',
-        element: <Test />,
+        path: "/room",
+        element: <RoomsIndex />,
       },
       {
-        path: '/seat',
+        path: "/seat",
         element: <Test />,
       },
     ],
   },
   {
-    path: '*',
+    path: "/login",
+    element: <Login />,
+  },
+  {
+    path: "*",
     element: <NotFound />,
   },
 ];

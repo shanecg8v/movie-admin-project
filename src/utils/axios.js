@@ -1,32 +1,31 @@
-import axios from "axios";
-import { v4 as uuidv4 } from "uuid";
-import Cookies from "js-cookie";
-import { setClearMaskArr, setMaskArr } from "../store/slice/maskSlice";
+import axios from 'axios';
+import { v4 as uuidv4 } from 'uuid';
+import Cookies from 'js-cookie';
+import { setClearMaskArr, setMaskArr } from '../store/slice/maskSlice';
+import { message } from "antd";
 
 let store = {};
 export const injectStore = (_store) => {
   store = _store;
 };
 
-const isDev = process.env.NODE_ENV === "development";
-const isTest = process.env.NODE_ENV === "test";
+const isDev = process.env.NODE_ENV === 'development';
+const isTest = process.env.NODE_ENV === 'test';
 const PRODUCT_URL = process.env.REACT_APP_PRODUCT_URL;
-const BASE_URL =
-  isDev || isTest
-    ? "/api/"
-    : `${PRODUCT_URL}api`;
-const SYSTEM_NAME = process.env.REACT_APP_NAME || "test";
+const DEV_URL = process.env.REACT_APP_PROXY_DEV_URL;
+const BASE_URL = isDev || isTest ? `${DEV_URL}api` : `${PRODUCT_URL}api`;
+const SYSTEM_NAME = process.env.REACT_APP_NAME || 'test';
 
 export default async (propsConfig) => {
-  const { customBaseUrl = "", url = "" } = propsConfig;
+  const { customBaseUrl = '', url = '' } = propsConfig;
   const loadingId = uuidv4();
   const instance = axios.create({
-    baseURL: customBaseUrl === "" ? BASE_URL : customBaseUrl,
+    baseURL: customBaseUrl === '' ? BASE_URL : customBaseUrl,
     headers: { common: {} },
   });
   const { dispatch = () => {} } = store;
 
-  instance.defaults.headers["Content-Type"] = "application/json";
+  instance.defaults.headers['Content-Type'] = 'application/json';
   instance.interceptors.request.use(
     (config) => {
       const { withToken = true, withLoading = true } = config;
@@ -43,7 +42,7 @@ export default async (propsConfig) => {
         dispatch(
           setMaskArr({
             id: loadingId,
-            url: customBaseUrl === "" ? BASE_URL : customBaseUrl,
+            url: customBaseUrl === '' ? BASE_URL : customBaseUrl,
           })
         );
       }
@@ -60,6 +59,9 @@ export default async (propsConfig) => {
       return response;
     },
     (e) => {
+      console.log('e',e);
+      const { message: errorMessage } = e.response.data;
+      message.error(errorMessage);
       dispatch(setClearMaskArr(loadingId));
       return Promise.reject(e);
     }
