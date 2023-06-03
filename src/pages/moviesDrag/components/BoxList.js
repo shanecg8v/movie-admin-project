@@ -2,10 +2,11 @@ import { StrictModeDroppable } from "./StrictModeDroppable";
 import styled from "styled-components";
 import { DragDropContext, Droppable, Draggable } from "react-beautiful-dnd";
 import { Tooltip } from "antd";
+import { convertToTime } from "../../../utils/utilFunction";
+import { MyZIndex } from "./CommonVar";
 
 const BoxWrapper = styled.div`
   display: flex;
-  justify-content: center;
   align-items: center;
   gap: 8px;
   padding: 16px;
@@ -13,6 +14,26 @@ const BoxWrapper = styled.div`
   overflow-x: auto;
   overflow-y: hidden;
   background-color: #8c99ae;
+  position: sticky;
+  top: 20px;
+  z-index: ${MyZIndex.sticky};
+  &::-webkit-scrollbar-track {
+    -webkit-box-shadow: inset 0 0 3px rgba(0, 0, 0, 0.3);
+    border-radius: 6px;
+    background-color: #f5f5f5;
+  }
+
+  &::-webkit-scrollbar {
+    width: 100%;
+    height: 8px;
+    background-color: #f5f5f5;
+  }
+
+  &::-webkit-scrollbar-thumb {
+    border-radius: 6px;
+    -webkit-box-shadow: inset 0 0 6px rgba(0, 0, 0, 0.3);
+    background-color: #555;
+  }
 `;
 const BoxItem = styled.div`
   display: flex;
@@ -23,9 +44,12 @@ const BoxItem = styled.div`
   line-height: 1.5;
   border-radius: 3px;
   width: 100px;
-  height: 150px;
-  border: ${(props) =>
-    props.isDragging ? "1px  dashed #4099ff" : "none"};
+  height:${(props) =>{
+    return props.isDragging ? "100px" : "150px";
+  }} !important;
+  border: ${(props) => {
+    return props.isDragging ? "1px  dashed #4099ff" : "none";
+  }};
   position: relative;
 `;
 const BoxImg = styled.img`
@@ -39,21 +63,25 @@ const Time = styled.div`
   position: absolute;
   right: 3px;
   bottom: 50px;
+  display: ${(props) => (props.isDragging ? "none" : "block")};
 `;
 const BoxContent = styled.div`
   width: 100px;
   overflow: hidden;
   white-space: nowrap;
   text-overflow: ellipsis;
-
+  display: ${(props) => (props.isDragging ? "none" : "block")};
 `;
 const Clone = styled(BoxItem)`
   /* + div {
     display: none !important;
   } */
+  opacity: 0.2;
 `;
 
 function BoxList({ dataArr }) {
+
+
   return (
     <StrictModeDroppable droppableId="BOXES" isDropDisabled={true}>
       {(provided, snapshot) => (
@@ -61,36 +89,43 @@ function BoxList({ dataArr }) {
           ref={provided.innerRef}
           isDraggingOver={snapshot.isDraggingOver}
         >
-          {dataArr.map((item, index) => (
-            <Draggable key={item.id} draggableId={item.id} index={index}>
-              {(provided, snapshot) => (
-                <>
-                  <Tooltip title={`電影:${item.content} 時長:${item.time}`}>
-                    <BoxItem
-                      ref={provided.innerRef}
-                      {...provided.draggableProps}
-                      {...provided.dragHandleProps}
-                      isDragging={snapshot.isDragging}
-                      style={provided.draggableProps.style}
-                      imgSrc={item.imgSrc}
-                      width={item.width}
-                      // style={getItemStyle(
-                      //   snapshot.isDragging,
-                      //   provided.draggableProps.style
-                      // )}
-                    >
-                      <BoxImg src={item.imgSrc} alt="" />
-                      <Time>{item.time}</Time>
-                      <BoxContent>{item.content}</BoxContent>
-                    </BoxItem>
-                  </Tooltip>
+          {dataArr.map((item, index) => {
+            const { id, movieCName,movieTime, imgUrl, width } = item;
+            const tmpTime = convertToTime(movieTime);
+            return (
+              <Draggable key={id} draggableId={id} index={index}>
+                {(provided, snapshot) => (
+                  <>
+                    <Tooltip title={`電影:${movieCName} 時長:${tmpTime}`}>
+                      <BoxItem
+                        ref={provided.innerRef}
+                        {...provided.draggableProps}
+                        {...provided.dragHandleProps}
+                        isDragging={snapshot.isDragging}
+                        style={provided.draggableProps.style}
+                        width={width}
+                      >
+                        <BoxImg src={imgUrl} alt="" />
+                        <Time isDragging={snapshot.isDragging}>{tmpTime}</Time>
+                        <BoxContent isDragging={snapshot.isDragging}>
+                          {movieCName}
+                        </BoxContent>
+                      </BoxItem>
+                    </Tooltip>
 
-                  {/* 下面這個行為是拖動後複製一個在旁邊 */}
-                  {snapshot.isDragging && <Clone>{item.content}</Clone>}
-                </>
-              )}
-            </Draggable>
-          ))}
+                    {/* 下面這個行為是拖動後複製一個在旁邊 */}
+                    {snapshot.isDragging && (
+                      <Clone>
+                        <BoxImg src={imgUrl} alt="" />
+                        <Time>{tmpTime}</Time>
+                        <BoxContent>{movieCName}</BoxContent>
+                      </Clone>
+                    )}
+                  </>
+                )}
+              </Draggable>
+            );
+          })}
           {provided.placeholder}
         </BoxWrapper>
       )}

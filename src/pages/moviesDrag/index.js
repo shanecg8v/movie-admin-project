@@ -5,6 +5,8 @@ import { DragDropContext, Droppable, Draggable } from "react-beautiful-dnd";
 import { StrictModeDroppable } from "./components/StrictModeDroppable";
 import BoxList from "./components/BoxList";
 import DragContainer from "./components/DragContainer";
+import { Select, DatePicker } from "antd";
+import locale from "antd/es/date-picker/locale/zh_TW";
 
 const reorder = (list, startIndex, endIndex) => {
   const result = Array.from(list);
@@ -40,14 +42,23 @@ const Content = styled.div`
   gap: 16px;
   margin-top: 24px;
 `;
+const PageTitle = styled.div`
+  font-weight: 500;
+  font-size: 32px;
+  line-height: 38px;
+  color: #00a886;
+  margin-bottom: 24px;
+`;
 
-const ITEMS = [
-  { id: "item-1", content: "Item 1" },
-  { id: "item-2", content: "Item 2" },
-  { id: "item-3", content: "Item 3" },
-];
+const ToolBar = styled.div`
+  display: flex;
+  gap: 24px;
+  margin-bottom: 24px;
+  >div{
+    flex: 1;
+  }
+`;
 
-//目前缺刪除功能
 //缺限制超過時間就不能再拖拉防呆
 const App = () => {
   const [allDateDataObj, setAllDateDataObj] = useState({
@@ -62,24 +73,66 @@ const App = () => {
   const [allDragBoxArr, setAllDragBoxArr] = useState([
     {
       id: "item-1",
-      content: "Item 1",
-      time: "02:45",
-      width: "11.4%",
-      imgSrc: "https://picsum.photos/seed/red/200/300",
+      _id: "644f92a2dd795250f85ce15a",
+      movieCName: "鬼滅",
+      movieTime: 165,
+      imgUrl: "https://picsum.photos/seed/red/200/300",
     },
     {
       id: "item-2",
-      content: "Item 2",
-      time: "02:00",
-      width: "8.3%",
-      imgSrc: "https://picsum.photos/seed/green/200/300",
+      _id: "644f92a2dd795250f85ce15b",
+      movieCName: "蜘蛛人",
+      movieTime: 120,
+      imgUrl: "https://picsum.photos/seed/green/200/300",
     },
     {
       id: "item-3",
-      content: "Item 3",
-      time: "02:30",
-      width: "10.4%",
-      imgSrc: "https://picsum.photos/seed/12/200/300",
+      _id: "644f92a2dd795250f85ce15c",
+      movieCName: "蝙蝠俠",
+      movieTime: 150,
+      imgUrl: "https://picsum.photos/seed/12/200/300",
+    },
+    {
+      id: "item-4",
+      _id: "644f92a2dd795250f85ce15d",
+      movieCName: "超人",
+      movieTime: 150,
+      imgUrl: "https://picsum.photos/seed/12/200/300",
+    },
+    {
+      id: "item-6",
+      _id: "644f92a2dd795250f85ce156",
+      movieCName: "美人魚",
+      movieTime: 135,
+      imgUrl: "https://picsum.photos/seed/fish/200/300",
+    },
+    {
+      id: "item-7",
+      _id: "644f92a2dd795250f85ce157",
+      movieCName: "美國隊長",
+      movieTime: 150,
+      imgUrl: "https://picsum.photos/seed/USA/200/300",
+    },
+    {
+      id: "item-8",
+      _id: "644f92a2dd795250f85ce158",
+      movieCName: "那些年",
+      movieTime: 125,
+      imgUrl: "https://picsum.photos/seed/year/200/300",
+    },
+    {
+      id: "item9",
+      _id: "644f92a2dd795250f85ce159",
+      movieCName: "三國",
+      movieTime: 300,
+      imgUrl: "https://picsum.photos/seed/89/200/300",
+    },
+    {
+      id: "item-00",
+      _id: "644f92a2dd795250f85ce15000",
+      movieCName: "鹿鼎記",
+      movieTime: 165,
+      imgUrl: "https://picsum.photos/seed/90/200/300",
     },
   ]);
 
@@ -89,7 +142,13 @@ const App = () => {
     if (!destination) {
       return;
     }
-    console.log("開始",source, source.droppableId, "結束", destination.droppableId);
+    console.log(
+      "開始",
+      source,
+      source.droppableId,
+      "結束",
+      destination.droppableId
+    );
     switch (source.droppableId) {
       //同container互相拖曳
       case destination.droppableId:
@@ -105,7 +164,6 @@ const App = () => {
         break;
       //上方複製元素置container
       case "BOXES":
-        console.log("***", ITEMS);
         setAllDateDataObj((prevState) => ({
           ...prevState,
           [destination.droppableId]: copy(
@@ -134,27 +192,66 @@ const App = () => {
   };
   console.log("state", allDateDataObj);
   return (
-    <DragDropContext onDragEnd={onDragEnd}>
-      <BoxList dataArr={allDragBoxArr} />
-      <Content>
-        {Object.keys(allDateDataObj).map((list) => (
-          <StrictModeDroppable
-            key={list}
-            droppableId={list}
-            direction="horizontal"
-          >
-            {(provided, snapshot) => (
-              <DragContainer
-                provided={provided}
-                snapshot={snapshot}
-                dragDataObj={allDateDataObj}
-                containerKey={list}
-              />
-            )}
-          </StrictModeDroppable>
-        ))}
-      </Content>
-    </DragDropContext>
+    <>
+      <PageTitle>電影上架</PageTitle>
+      <ToolBar>
+        <Select
+          defaultValue={{
+            value: "高雄影城",
+            label: "高雄影城",
+          }}
+          style={{
+            width: 200,
+          }}
+          onChange={() => {}}
+          options={[
+            {
+              value: "高雄影城",
+              label: "高雄影城",
+            },
+          ]}
+        />
+        <Select
+          defaultValue={{
+            value: "A影廳",
+            label: "A影廳",
+          }}
+          style={{
+            width: 200,
+          }}
+          onChange={() => {}}
+          options={[
+            {
+              value: "A影廳",
+              label: "A影廳",
+            },
+          ]}
+        />
+        <DatePicker locale={locale} onChange={() => {}} />
+      </ToolBar>
+      <DragDropContext onDragEnd={onDragEnd}>
+        <BoxList dataArr={allDragBoxArr} />
+        <Content>
+          {Object.keys(allDateDataObj).map((list) => (
+            <StrictModeDroppable
+              key={list}
+              droppableId={list}
+              direction="horizontal"
+            >
+              {(provided, snapshot) => (
+                <DragContainer
+                  provided={provided}
+                  snapshot={snapshot}
+                  dragDataObj={allDateDataObj}
+                  containerKey={list}
+                  setAllDateDataObj={setAllDateDataObj}
+                />
+              )}
+            </StrictModeDroppable>
+          ))}
+        </Content>
+      </DragDropContext>
+    </>
   );
 };
 

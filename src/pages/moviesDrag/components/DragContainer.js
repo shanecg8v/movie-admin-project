@@ -1,8 +1,9 @@
 import styled from "styled-components";
 import { DragDropContext, Droppable, Draggable } from "react-beautiful-dnd";
 import { Tooltip } from "antd";
-import TimeLine  from "@/assets/image/timeline.png"
-
+import TimeLine from "@/assets/image/timeline.png";
+import { DeleteTwoTone } from "@ant-design/icons";
+import { convertToTime } from "../../../utils/utilFunction";
 const ContainerWrapper = styled.div`
   display: flex;
   background: #dbdbdb;
@@ -15,30 +16,30 @@ const Container = styled.div`
   flex-wrap: nowrap;
   width: 100%;
   padding-top: 40px;
-  padding-left:12px;
+  padding-left: 12px;
   border: 1px
     ${(props) => (props.isDraggingOver ? "dashed #000" : "solid #ddd")};
   background-image: ${(props) => `url(${props.imgSrc})`};
-  background-repeat:no-repeat;
-  background-size:100%;
+  background-repeat: no-repeat;
+  background-size: 100%;
 `;
 const BoxItem = styled.div`
+  position: relative;
   display: flex;
   height: 100%;
   width: 100%;
   user-select: none;
-  padding: 0.5rem;
+  justify-content: flex-end;
   align-items: flex-start;
   align-content: flex-start;
   line-height: 1.5;
   border-radius: 3px;
   background: #fff;
-  background-image: ${(props) => `url(${props.imgSrc})`} ;
-  background-repeat:no-repeat;
-  background-size:cover;
+  background-image: ${(props) => `url(${props.imgSrc})`};
+  background-repeat: no-repeat;
+  background-size: cover;
   border: 1px
     ${(props) => {
-      console.log("測試", props.isDragging);
       return props.isDragging ? "dashed #4099ff" : "1px solid #ddd";
     }};
 `;
@@ -52,7 +53,6 @@ const Notice = styled.div`
   border: 1px solid transparent;
   line-height: 1.5;
   color: #aaa;
-  
 `;
 const Handle = styled.div`
   display: flex;
@@ -78,6 +78,13 @@ const Title = styled.div`
   width: 20%;
   padding: 10px;
 `;
+const DelBtn = styled(DeleteTwoTone)`
+  position: absolute;
+  top: 5px;
+  right: 5px;
+  width: 20px;
+  height: 20px;
+`;
 const titleMap = {
   monday: "週一",
   tuesday: "週二",
@@ -87,10 +94,28 @@ const titleMap = {
   saturday: "週六",
   sunday: "週日",
 };
+const ALL_TIME_MINUTE = 1320; //總共營業的分鐘數
 
 function DragContainer(props) {
-  const { provided, snapshot, dragDataObj, containerKey } = props;
+  const { provided, snapshot, dragDataObj, containerKey, setAllDateDataObj } =
+    props;
 
+  function handleDel({ containerKey, boxId }) {
+    setAllDateDataObj((prev) => {
+      const currentContainerArr = prev[containerKey];
+      const filterDataArr = currentContainerArr.filter(
+        (item) => item.id !== boxId
+      );
+      return {
+        ...prev,
+        [containerKey]: filterDataArr,
+      };
+    });
+  }
+  function convertWidth(num) {
+    console.log("--", ALL_TIME_MINUTE / parseInt(num), parseInt(num));
+    return (parseInt(num) / ALL_TIME_MINUTE) * 100 + "%";
+  }
   return (
     <ContainerWrapper>
       <Title>{titleMap[containerKey]}</Title>
@@ -100,23 +125,36 @@ function DragContainer(props) {
         imgSrc={TimeLine}
       >
         {dragDataObj[containerKey].length
-          ? dragDataObj[containerKey].map((item, index) => (
-              <Draggable key={item.id} draggableId={item.id} index={index}>
-                {(provided, snapshot) => (
-                  <Handle {...provided.dragHandleProps} width={item.width}>
-                    <Tooltip title={`電影:${item.content} 時長:${item.time}`}>
-                      <BoxItem
-                        ref={provided.innerRef}
-                        {...provided.draggableProps}
-                        isDragging={snapshot.isDragging}
-                        style={provided.draggableProps.style}
-                        imgSrc={item.imgSrc}
-                      ></BoxItem>
-                    </Tooltip>
-                  </Handle>
-                )}
-              </Draggable>
-            ))
+          ? dragDataObj[containerKey].map((item, index) => {
+              const { id, movieCName, movieTime, imgUrl, width } = item;
+              const tmpTime = convertToTime(movieTime);
+              const tmpWidth = convertWidth(movieTime);
+
+              return (
+                <Draggable key={id} draggableId={id} index={index}>
+                  {(provided, snapshot) => (
+                    <Handle {...provided.dragHandleProps} width={tmpWidth}>
+                      <Tooltip title={`電影:${movieCName} 時長:${tmpTime}`}>
+                        <BoxItem
+                          ref={provided.innerRef}
+                          {...provided.draggableProps}
+                          isDragging={snapshot.isDragging}
+                          style={provided.draggableProps.style}
+                          imgSrc={imgUrl}
+                        >
+                          <DelBtn
+                            twoToneColor="#e70303"
+                            onClick={() => {
+                              handleDel({ containerKey, boxId: id });
+                            }}
+                          />
+                        </BoxItem>
+                      </Tooltip>
+                    </Handle>
+                  )}
+                </Draggable>
+              );
+            })
           : !provided.placeholder && <Notice>Drop items here</Notice>}
         {provided.placeholder}
       </Container>
