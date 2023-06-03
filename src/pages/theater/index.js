@@ -13,11 +13,16 @@ const Theater = () => {
   const [tadate, setTadate] = useState(null)
   useEffect(() => {
     getTheaterList().then(({data}) => {
-      console.log(data)
       setTadate(data.data)
     })
 
   }, [])
+
+  const editRow = (rowId) => {
+    console.log('rowId', rowId)
+    setIsModalOpen(true)
+    
+  }
 
   const columns = [
     {
@@ -28,12 +33,12 @@ const Theater = () => {
     {
       title: '影廳數量',
       dataIndex: 'roomCount',
-      key: _.uniqueId('roomCount')
+      key: 'roomCount'
     },
     {
       title: '座位總數',
       dataIndex: 'seatCount',
-      key: _.uniqueId('seatCount')
+      key: 'seatCount'
 
     },
     {
@@ -43,7 +48,7 @@ const Theater = () => {
       render: (item, i) => (
         <>
           <Button className="me-3" key={i}>新增影廳</Button>
-          <Button>編輯</Button>
+          <Button onClick={()=>editRow(item)}>編輯</Button>
         </>
       )
     },
@@ -73,7 +78,7 @@ const Theater = () => {
           bordered
           dataSource={tadate}
           columns={columns}
-          key={_.uniqueId(tadate)}
+          rowKey='_id'
         />
       </>
     }

@@ -8,3 +8,22 @@ export const getTheaterList = (props) => {
   });
 };
 
+export const postTheater = (props) => {
+  return axios({
+    url: `/admin/theaters`,
+    method: 'post',
+    ...props,
+  });
+};
+
+export const postTheaterImg = (data) => {
+  
+  return axios({
+    url: `/admin/theaters/file/upload `,
+    method: 'post',
+    type: 'multipart/form-data',
+    data
+  });
+};
+
+

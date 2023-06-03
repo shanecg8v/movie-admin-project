@@ -7,11 +7,13 @@ const { getTheaterList } = apiTheater
 const Theater = () => {
   const [isModalOpen, setIsModalOpen] = useState(false)
   // useEffect(() => {
-  //   getTheaterList().then(i=>{
-  //     console.log(i)
-  //   })
-
+  //   // getTheaterList().then(i=>{
+  //   //   console.log(i)
+  //   // })
   // }, [])
+  let aaa = () => {
+    console.log(121221)
+  }
 
   const columns = [
     {
@@ -29,7 +31,7 @@ const Theater = () => {
       render: () => (
         <>
           <Button className="me-3">新增影廳</Button>
-          <Button>編輯</Button>
+          <Button onClick={aaa()}>編輯</Button>
         </>
       )
     },
