@@ -5,8 +5,10 @@ import { DragDropContext, Droppable, Draggable } from "react-beautiful-dnd";
 import { StrictModeDroppable } from "./components/StrictModeDroppable";
 import BoxList from "./components/BoxList";
 import DragContainer from "./components/DragContainer";
-import { Select, DatePicker } from "antd";
+import { Select, DatePicker, message } from "antd";
 import locale from "antd/es/date-picker/locale/zh_TW";
+import { ALL_TIME_MINUTE } from "./components/CommonVar";
+import { isNumber } from "../../utils/utilFunction";
 
 const reorder = (list, startIndex, endIndex) => {
   const result = Array.from(list);
@@ -54,11 +56,32 @@ const ToolBar = styled.div`
   display: flex;
   gap: 24px;
   margin-bottom: 24px;
-  >div{
+  > div {
     flex: 1;
   }
 `;
+//確認加入拖曳進去的時間是否超過總營業時間
+function checkFullTime({ dataArr, boxTime }) {
+  console.log("--", dataArr, boxTime, isNumber(boxTime));
+  if (!!!isNumber(boxTime)) {
+    console.error("boxTime輸入時間格式有誤");
+    return;
+  }
+  const sumArrTime = dataArr.reduce((accumulator, item) => {
+    return accumulator + item.movieTime;
+  }, 0);
+  if (!!!isNumber(sumArrTime)) {
+    console.error("dataArr輸入時間格式有誤");
+    return;
+  }
+  const isFull = sumArrTime + boxTime > ALL_TIME_MINUTE ? true : false;
+  console.log("--**-*-", isFull, sumArrTime, boxTime);
 
+  if (isFull) {
+    message.error("當天時間電影設定已超過總營業時間，無法在增加");
+  }
+  return isFull;
+}
 //缺限制超過時間就不能再拖拉防呆
 const App = () => {
   const [allDateDataObj, setAllDateDataObj] = useState({
@@ -138,7 +161,6 @@ const App = () => {
 
   const onDragEnd = (result) => {
     const { source, destination } = result;
-
     if (!destination) {
       return;
     }
@@ -149,6 +171,13 @@ const App = () => {
       "結束",
       destination.droppableId
     );
+    const isFull = checkFullTime({
+      dataArr: allDateDataObj[destination.droppableId],
+      boxTime: allDragBoxArr[source.index].movieTime,
+    });
+    if(isFull){
+      return;
+    }
     switch (source.droppableId) {
       //同container互相拖曳
       case destination.droppableId:
@@ -174,6 +203,7 @@ const App = () => {
           ),
         }));
         break;
+      //不同container box互相拖曳
       default:
         console.log("default");
         setAllDateDataObj((prevState) => {
@@ -190,6 +220,7 @@ const App = () => {
         break;
     }
   };
+
   console.log("state", allDateDataObj);
   return (
     <>

@@ -4,6 +4,7 @@ import { Tooltip } from "antd";
 import TimeLine from "@/assets/image/timeline.png";
 import { DeleteTwoTone } from "@ant-design/icons";
 import { convertToTime } from "../../../utils/utilFunction";
+import { ALL_TIME_MINUTE } from "./CommonVar";
 const ContainerWrapper = styled.div`
   display: flex;
   background: #dbdbdb;
@@ -94,7 +95,6 @@ const titleMap = {
   saturday: "週六",
   sunday: "週日",
 };
-const ALL_TIME_MINUTE = 1320; //總共營業的分鐘數
 
 function DragContainer(props) {
   const { provided, snapshot, dragDataObj, containerKey, setAllDateDataObj } =
@@ -113,7 +113,6 @@ function DragContainer(props) {
     });
   }
   function convertWidth(num) {
-    console.log("--", ALL_TIME_MINUTE / parseInt(num), parseInt(num));
     return (parseInt(num) / ALL_TIME_MINUTE) * 100 + "%";
   }
   return (
