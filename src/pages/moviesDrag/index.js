@@ -17,7 +17,6 @@ const copy = (source, destination, droppableSource, droppableDestination) => {
   const sourceClone = Array.from(source);
   const destClone = Array.from(destination);
   const item = sourceClone[droppableSource.index];
-  console.log("*****", source,sourceClone, droppableSource);
   destClone.splice(droppableDestination.index, 0, { ...item, id: uuid() });
   return destClone;
 };
@@ -26,9 +25,7 @@ const move = (source, destination, droppableSource, droppableDestination) => {
   const sourceClone = Array.from(source);
   const destClone = Array.from(destination);
   const [removed] = sourceClone.splice(droppableSource.index, 1);
-  console.log("sour", sourceClone, destClone);
   destClone.splice(droppableDestination.index, 0, removed);
-
   const result = {
     [droppableSource.droppableId]: sourceClone,
     [droppableDestination.droppableId]: destClone,
@@ -38,7 +35,6 @@ const move = (source, destination, droppableSource, droppableDestination) => {
 };
 
 const Content = styled.div`
-  /* margin-right: 200px; */
   display: flex;
   flex-direction: column;
   gap: 16px;
@@ -51,8 +47,10 @@ const ITEMS = [
   { id: "item-3", content: "Item 3" },
 ];
 
+//目前缺刪除功能
+//缺限制超過時間就不能再拖拉防呆
 const App = () => {
-  const [state, setState] = useState({
+  const [allDateDataObj, setAllDateDataObj] = useState({
     monday: [],
     tuesday: [],
     wednesday: [],
@@ -61,6 +59,29 @@ const App = () => {
     saturday: [],
     sunday: [],
   });
+  const [allDragBoxArr, setAllDragBoxArr] = useState([
+    {
+      id: "item-1",
+      content: "Item 1",
+      time: "02:45",
+      width: "11.4%",
+      imgSrc: "https://picsum.photos/seed/red/200/300",
+    },
+    {
+      id: "item-2",
+      content: "Item 2",
+      time: "02:00",
+      width: "8.3%",
+      imgSrc: "https://picsum.photos/seed/green/200/300",
+    },
+    {
+      id: "item-3",
+      content: "Item 3",
+      time: "02:30",
+      width: "10.4%",
+      imgSrc: "https://picsum.photos/seed/12/200/300",
+    },
+  ]);
 
   const onDragEnd = (result) => {
     const { source, destination } = result;
@@ -68,12 +89,12 @@ const App = () => {
     if (!destination) {
       return;
     }
-    console.log("開始", source.droppableId, "結束", destination.droppableId);
+    console.log("開始",source, source.droppableId, "結束", destination.droppableId);
     switch (source.droppableId) {
       //同container互相拖曳
       case destination.droppableId:
         console.log("---", destination.droppableId);
-        setState((prevState) => ({
+        setAllDateDataObj((prevState) => ({
           ...prevState,
           [destination.droppableId]: reorder(
             prevState[source.droppableId],
@@ -83,12 +104,12 @@ const App = () => {
         }));
         break;
       //上方複製元素置container
-      case "ITEMS":
+      case "BOXES":
         console.log("***", ITEMS);
-        setState((prevState) => ({
+        setAllDateDataObj((prevState) => ({
           ...prevState,
           [destination.droppableId]: copy(
-            ITEMS,
+            allDragBoxArr,
             prevState[destination.droppableId],
             source,
             destination
@@ -97,7 +118,7 @@ const App = () => {
         break;
       default:
         console.log("default");
-        setState((prevState) =>{
+        setAllDateDataObj((prevState) => {
           return {
             ...prevState,
             ...move(
@@ -107,18 +128,16 @@ const App = () => {
               destination
             ),
           };
-        }
-          
-        );
+        });
         break;
     }
   };
-  console.log("state", state);
+  console.log("state", allDateDataObj);
   return (
     <DragDropContext onDragEnd={onDragEnd}>
-      <BoxList />
+      <BoxList dataArr={allDragBoxArr} />
       <Content>
-        {Object.keys(state).map((list) => (
+        {Object.keys(allDateDataObj).map((list) => (
           <StrictModeDroppable
             key={list}
             droppableId={list}
@@ -128,7 +147,7 @@ const App = () => {
               <DragContainer
                 provided={provided}
                 snapshot={snapshot}
-                dragDataObj={state}
+                dragDataObj={allDateDataObj}
                 containerKey={list}
               />
             )}

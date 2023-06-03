@@ -1,6 +1,7 @@
 import { StrictModeDroppable } from "./StrictModeDroppable";
 import styled from "styled-components";
 import { DragDropContext, Droppable, Draggable } from "react-beautiful-dnd";
+import { Tooltip } from "antd";
 
 const BoxWrapper = styled.div`
   display: flex;
@@ -15,51 +16,75 @@ const BoxWrapper = styled.div`
 `;
 const BoxItem = styled.div`
   display: flex;
+  flex-direction: column;
   user-select: none;
-  padding: 0.5rem;
   align-items: flex-start;
   align-content: flex-start;
   line-height: 1.5;
   border-radius: 3px;
-  background: #fff;
-  border: 1px ${(props) => (props.isDragging ? "dashed #4099ff" : "solid #ddd")};
+  width: 100px;
+  height: 150px;
+  border: ${(props) =>
+    props.isDragging ? "1px  dashed #4099ff" : "none"};
+  position: relative;
+`;
+const BoxImg = styled.img`
+  object-fit: cover;
+  width: 100%;
+  height: 100px;
+  margin-bottom: 8px;
+`;
+const Time = styled.div`
+  color: white;
+  position: absolute;
+  right: 3px;
+  bottom: 50px;
+`;
+const BoxContent = styled.div`
+  width: 100px;
+  overflow: hidden;
+  white-space: nowrap;
+  text-overflow: ellipsis;
+
 `;
 const Clone = styled(BoxItem)`
   /* + div {
     display: none !important;
   } */
 `;
-const ITEMS = [
-  { id: "item-1", content: "Item 1" },
-  { id: "item-2", content: "Item 2" },
-  { id: "item-3", content: "Item 3" },
-];
 
-function BoxList() {
+function BoxList({ dataArr }) {
   return (
-    <StrictModeDroppable droppableId="ITEMS" isDropDisabled={true}>
+    <StrictModeDroppable droppableId="BOXES" isDropDisabled={true}>
       {(provided, snapshot) => (
         <BoxWrapper
           ref={provided.innerRef}
           isDraggingOver={snapshot.isDraggingOver}
         >
-          {ITEMS.map((item, index) => (
+          {dataArr.map((item, index) => (
             <Draggable key={item.id} draggableId={item.id} index={index}>
               {(provided, snapshot) => (
                 <>
-                  <BoxItem
-                    ref={provided.innerRef}
-                    {...provided.draggableProps}
-                    {...provided.dragHandleProps}
-                    isDragging={snapshot.isDragging}
-                    style={provided.draggableProps.style}
-                    // style={getItemStyle(
-                    //   snapshot.isDragging,
-                    //   provided.draggableProps.style
-                    // )}
-                  >
-                    {item.content}
-                  </BoxItem>
+                  <Tooltip title={`電影:${item.content} 時長:${item.time}`}>
+                    <BoxItem
+                      ref={provided.innerRef}
+                      {...provided.draggableProps}
+                      {...provided.dragHandleProps}
+                      isDragging={snapshot.isDragging}
+                      style={provided.draggableProps.style}
+                      imgSrc={item.imgSrc}
+                      width={item.width}
+                      // style={getItemStyle(
+                      //   snapshot.isDragging,
+                      //   provided.draggableProps.style
+                      // )}
+                    >
+                      <BoxImg src={item.imgSrc} alt="" />
+                      <Time>{item.time}</Time>
+                      <BoxContent>{item.content}</BoxContent>
+                    </BoxItem>
+                  </Tooltip>
+
                   {/* 下面這個行為是拖動後複製一個在旁邊 */}
                   {snapshot.isDragging && <Clone>{item.content}</Clone>}
                 </>
