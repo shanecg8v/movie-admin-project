@@ -39,8 +39,8 @@ const MemberManager = () => {
       title: <div style={{ textAlign: 'center' }}>編輯</div>,
       dataIndex: 'operation',
       render: (_, record) =>
-        rdData.length >= 1 ? (<div style={{ textAlign: 'center' }}>
-          <a onClick={() => { console.log(record);setUserIndex(record.key) }}>編輯</a></div>
+        rdData.length >= 1 ? (<div style={{ textAlign: 'center', color: 'blue' }}>
+          <a onClick={() => { console.log(record); setUserIndex(record.key) }}>編輯</a></div>
         ) : null,
     },
   ];

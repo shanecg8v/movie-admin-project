@@ -10,7 +10,7 @@ const Movie = () => {
   const [movieIndex, setMovieIndex] = useState(-1);
   const pageSize = 5
   useEffect(() => {
-    apiMovieGet(1, pageSize*2)
+    apiMovieGet(1, pageSize * 2)
       .then(e => {
         const data = e?.data.data.map((d, i) => {
           return { ...d, key: i }
@@ -44,7 +44,7 @@ const Movie = () => {
       title: <div style={{ textAlign: 'center' }}>電影販售管理</div>,
       dataIndex: 'operation',
       render: (_, record) =>
-        rdData.length >= 1 ? (<div style={{ textAlign: 'center' }}>
+        rdData.length >= 1 ? (<div style={{ textAlign: 'center', color: 'blue' }}>
           <a onClick={() => setMovieIndex(record.key)}>編輯</a></div>
         ) : null,
     },
@@ -78,10 +78,10 @@ const Movie = () => {
 
   return (
     <div style={{ margin: "auto 5%", width: '90%' }}>
-      {movieIndex > -1 ? <MovieEdit index={movieIndex} cancelHandler={setMovieIndex} style={{ marginTop: 20 }} isAdd={movieIndex >= rdData.length}/> : <>
+      {movieIndex > -1 ? <MovieEdit index={movieIndex} cancelHandler={setMovieIndex} style={{ marginTop: 20 }} isAdd={movieIndex >= rdData.length} /> : <>
         <div>新增電影</div>
         <Row justify='end' style={{ marginBottom: 16 }} gutter={10}>
-          <Col><Button type="primary" onClick={()=>setMovieIndex(rdData.length)}>新增電影</Button></Col>
+          <Col><Button type="primary" onClick={() => setMovieIndex(rdData.length)}>新增電影</Button></Col>
         </Row>
         <Table rowClassName={() => 'editable-row'} bordered dataSource={rdData} columns={columns} pagination={{ pageSize, onChange: pageChange }} />
       </>}
