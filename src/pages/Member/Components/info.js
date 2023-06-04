@@ -8,7 +8,7 @@ export const FormListAdapter = ({ params }) => {
   const { fields, operation, getDatas, marginBottom } = params
   const [isEdit, setIsEdit] = useState(false)
   const getValues = () => {
-    const values = getDatas().join(',')
+    const values = getDatas()?.join(',')
     return values == '' ? '無資料' : values
   }
 
@@ -59,6 +59,10 @@ const MemberInfo = ({ index, setData, isAdd }) => {
         <Form.Item label="帳號" name="email" style={{ marginBottom: 0 }}>
           <Input defaultValue={info.email} disabled={!isAdd} bordered={false} />
         </Form.Item>
+        <div style={{ borderBottom: '1px solid' }} />
+        {isAdd && <Form.Item label="密碼" name="password" style={{ marginBottom: 0 }}>
+          <Input type="password" bordered={false} />
+        </Form.Item>}
         <div style={{ borderBottom: '1px solid' }} />
         <Form.Item label="姓名" name="name" style={{ marginBottom: 0 }}>
           <Input defaultValue={info.name} bordered={false} />

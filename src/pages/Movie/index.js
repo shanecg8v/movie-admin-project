@@ -1,6 +1,5 @@
-import { Button, Col, Dropdown, Row, Table } from "antd";
+import { Button, Col, Row, Table } from "antd";
 import { useEffect, useState } from "react";
-import { DownOutlined } from '@ant-design/icons';
 import MovieEdit from "./Components/MovieEdit";
 import { apiMovieGet } from "../../api";
 import { useDispatch, useSelector } from "react-redux";
@@ -14,10 +13,7 @@ const Movie = () => {
     apiMovieGet(1, pageSize*2)
       .then(e => {
         const data = e?.data.data.map((d, i) => {
-          return {
-            ...d,
-            key: i
-          }
+          return { ...d, key: i }
         })
         updateMovies(data)
       })
@@ -54,9 +50,7 @@ const Movie = () => {
     },
   ];
   const columns = defaultColumns.map((col) => {
-    if (!col.editable) {
-      return col;
-    }
+    if (!col.editable) return col;
     return {
       ...col,
       onCell: (record) => ({
@@ -67,23 +61,6 @@ const Movie = () => {
       }),
     };
   });
-  const items = [
-    {
-      label: <a href="https://www.antgroup.com">1st menu item</a>,
-      key: '0',
-    },
-    {
-      label: <a href="https://www.aliyun.com">2nd menu item</a>,
-      key: '1',
-    },
-    {
-      type: 'divider',
-    },
-    {
-      label: '3rd menu item',
-      key: '3',
-    },
-  ];
 
   const pageChange = (current, pageSize) => {
     if (rdData.length - current * pageSize != 0) return
@@ -104,16 +81,6 @@ const Movie = () => {
       {movieIndex > -1 ? <MovieEdit index={movieIndex} cancelHandler={setMovieIndex} style={{ marginTop: 20 }} isAdd={movieIndex >= rdData.length}/> : <>
         <div>新增電影</div>
         <Row justify='end' style={{ marginBottom: 16 }} gutter={10}>
-          <Col><Dropdown menu={{ items }} trigger={['click']}>
-            <Button type="primary"  >
-              下拉選擇影城<DownOutlined />
-            </Button>
-          </Dropdown></Col>
-          <Col><Dropdown menu={{ items }} trigger={['click']} >
-            <Button type="primary" >
-              下拉選擇電影<DownOutlined />
-            </Button>
-          </Dropdown></Col>
           <Col><Button type="primary" onClick={()=>setMovieIndex(rdData.length)}>新增電影</Button></Col>
         </Row>
         <Table rowClassName={() => 'editable-row'} bordered dataSource={rdData} columns={columns} pagination={{ pageSize, onChange: pageChange }} />
