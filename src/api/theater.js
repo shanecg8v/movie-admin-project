@@ -43,4 +43,12 @@ export const postTheaterImg = (data) => {
   });
 };
 
+export const getRooms = (id) => {
+  
+  return axios({
+    url: `/admin/rooms?theaterId=${id}`,
+    method: 'get',
+  });
+};
+
 

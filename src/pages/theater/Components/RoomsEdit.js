@@ -6,7 +6,8 @@ import { apiTheater } from "@/api";
 const { postTheater, postTheaterImg } = apiTheater;
 const { TextArea } = Input;
 
-const TheaterEdit = (props) => {
+
+const RoomsEdit = (props) => {
 
   const { isEditMode, initialValues } = props
 
@@ -124,4 +125,4 @@ const TheaterEdit = (props) => {
 
 
 
-export default TheaterEdit
+export default RoomsEdit

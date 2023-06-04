@@ -1,61 +1,39 @@
 import { Button, Table, Divider, Typography, Card, Col, DatePicker, Form, Row, Select, Space, Tag } from "antd"
 import { useEffect, useState } from "react";
 import { apiTheater } from '@/api';
-import TheaterEdit from './Components/TheaterEdit'
+import Rooms from './Components/RoomsEdit'
+import _ from 'lodash'
 
 const { Title } = Typography;
-const { getTheaterList } = apiTheater
+const { getTheaterList, getRooms } = apiTheater
+
 const Theater = () => {
   const [isModalOpen, setIsModalOpen] = useState(false)
-  // useEffect(() => {
-  //   // getTheaterList().then(i=>{
-  //   //   console.log(i)
-  //   // })
-  // }, [])
-  let aaa = (row, i) => {
-    console.log(row, i)
+  const [options, setOptions] = useState(false)
+  const [rooms, setRooms] = useState([])
+
+  useEffect(() => {
+    getTheaterList().then(({data:{data}})=>{
+      const temp = _.map(data, item => {
+        return {
+          ...item,
+          label: item.name,
+          value: item._id
+        }
+      })
+      setOptions(temp)
+    })
+  }, [])
+
+  const onChange = (id) => {
+    getRooms(id).then(({data:{data:{rooms}}}) => {
+      setRooms(rooms)
+    })
   }
-
-  const columns = [
-    {
-      title: '影城',
-      dataIndex: 'theater',
-    },
-    {
-      title: '座位',
-      dataIndex: 'seats',
-    },
-    {
-      title: '新增',
-      dataIndex: 'rooms',
-      width: 400,
-      render: (row, i) => (
-        <>
-          <Button className="me-3">新增影廳</Button>
-          <Button onClick={()=>{aaa(row, i)}}>編輯</Button>
-        </>
-      )
-    },
-    // {
-    //   title: '編輯',
-    //   dataIndex: 'rditTheater',
-    // },
-  ];
-
-  const data = [
-    {
-      theater: '台北影城',
-      seats: '5廳1200',
-      rooms: 32,
-      rditTheater: 'New York No. 1 Lake Park',
-    },
-    {
-      theater: '台北影城',
-      seats: '5廳1200',
-      rooms: 32,
-      rditTheater: 'New York No. 1 Lake Park',
-    },
-  ];
+  
+  const toggleModal = () => {
+    isModalOpen ? setIsModalOpen(false) : setIsModalOpen(true)
+  }
 
 
   return (
@@ -66,57 +44,55 @@ const Theater = () => {
     { isModalOpen 
       ?
       <>
-        {/* <TheaterEdit />  */}
+        <Rooms /> 
       </>
       :
       <>
-        {/* <Button
-            className="float-end m-3"
-            size="large"
-            onClick={()=>{setIsModalOpen(true)}}
-          >
-        新增影城
-        </Button> */}
-        {/* <div className="row justify-content-end align-items-end"> */}
-        <Row justify="end" align="middle">
-            <Title style={{ margin: 0 }} align="top" level={4}>影廳選擇</Title>
-          <Col span={5} offset={1}>
-            <Select
-              alias="top"
-              style={{ width: 400 }}
-              showSearch
+        <Row justify="end">
+          <Button
+              // className="float-end m-3"
               size="large"
-              placeholder="Select a person"
-              optionFilterProp="children"
-              // onChange={onChange}
-              // onSearch={onSearch}
-              // filterOption={(input, option) =>
-              //   (option?.label ?? '').toLowerCase().includes(input.toLowerCase())
-              // }
-              // options={[
-              //   {
-              //     value: 'jack',
-              //     label: 'Jack',
-              //   },
-              //   {
-              //     value: 'lucy',
-              //     label: 'Lucy',
-              //   },
-              //   {
-              //     value: 'tom',
-              //     label: 'Tom',
-              //   },
-              // ]}
-            />
-          </Col>
+              onClick={()=>{toggleModal()}}
+            >
+          新增影廳
+          </Button>
         </Row>
-
-        {/* <Table 
-          rowClassName={() => 'editable-row'}
-          bordered
-          dataSource={data}
-          columns={columns}
-        /> */}
+        <div className="container-fluid border mx-auto mt-3">
+          <Row justify="end" align="middle" className="mt-3">
+              <Title style={{ margin: 0 }} align="top" level={4}>影城選擇</Title>
+            <Col span={5} offset={1}>
+              <Select
+                alias="top"
+                style={{ width: 300 }}
+                showSearch
+                size="large"
+                placeholder="Select a person"
+                optionFilterProp="children"
+                onChange={onChange}
+                filterOption={(input, option) =>
+                  (option?.label ?? '').toLowerCase().includes(input.toLowerCase())
+                }
+                options={options}
+              />
+            </Col>
+          </Row>
+          <Row className="mt-3 mb-3">
+            <div className="container d-flex">
+              {rooms && rooms.map(item => (
+                <Card 
+                  style={{
+                    width: '200px',
+                    height: '100px'
+                  }}
+                  key={item.id}  
+                >
+                  <p>{item.name}</p> 
+                </Card>
+                  
+              ))}
+            </div>
+          </Row>
+        </div>
       </>
     }
   </div>
