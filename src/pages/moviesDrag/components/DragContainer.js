@@ -24,6 +24,31 @@ const Container = styled.div`
   background-repeat: no-repeat;
   background-size: 100%;
 `;
+const BoxBreakItem = styled.div`
+  position: relative;
+  display: flex;
+  height: 100%;
+  width: 100%;
+  user-select: none;
+  justify-content: flex-end;
+  align-items: flex-start;
+  align-content: flex-start;
+  line-height: 1.5;
+  border-radius: 3px;
+  background-color: ${(props) => {
+    const type = props.imgSrc;
+    const colorObj = {
+      break15: "red",
+      break30: "blue",
+      break60: "green",
+    };
+    return colorObj[type];
+  }};
+  border: 1px
+    ${(props) => {
+      return props.isDragging ? "dashed #4099ff" : "1px solid #ddd";
+    }};
+`;
 const BoxItem = styled.div`
   position: relative;
   display: flex;
@@ -71,7 +96,6 @@ const Title = styled.div`
   font-weight: 400;
   font-size: 16px;
   line-height: 24px;
-  /* identical to box height, or 150% */
   display: flex;
   align-items: center;
   justify-content: center;
@@ -83,6 +107,21 @@ const DelBtn = styled(DeleteTwoTone)`
   position: absolute;
   top: 5px;
   right: 5px;
+  width: 20px;
+  height: 20px;
+`;
+const BreakDelBtn = styled(DeleteTwoTone)`
+  position: absolute;
+  bottom: -30px;
+  right: ${(props) => {
+    const type = props.imgSrc;
+    const gapObj = {
+      break15: "-8px",
+      break30: "-5px",
+      break60: "5px",
+    };
+    return gapObj[type];
+  }};
   width: 20px;
   height: 20px;
 `;
@@ -125,29 +164,48 @@ function DragContainer(props) {
       >
         {dragDataObj[containerKey].length
           ? dragDataObj[containerKey].map((item, index) => {
-              const { id, movieCName, movieTime, imgUrl, width } = item;
+              const { id, movieCName, movieTime, imgUrl } = item;
               const tmpTime = convertToTime(movieTime);
               const tmpWidth = convertWidth(movieTime);
+              const isBreakBlock = imgUrl.indexOf("break") !== -1;
 
               return (
                 <Draggable key={id} draggableId={id} index={index}>
                   {(provided, snapshot) => (
                     <Handle {...provided.dragHandleProps} width={tmpWidth}>
                       <Tooltip title={`電影:${movieCName} 時長:${tmpTime}`}>
-                        <BoxItem
-                          ref={provided.innerRef}
-                          {...provided.draggableProps}
-                          isDragging={snapshot.isDragging}
-                          style={provided.draggableProps.style}
-                          imgSrc={imgUrl}
-                        >
-                          <DelBtn
-                            twoToneColor="#e70303"
-                            onClick={() => {
-                              handleDel({ containerKey, boxId: id });
-                            }}
-                          />
-                        </BoxItem>
+                        {isBreakBlock ? (
+                          <BoxBreakItem
+                            ref={provided.innerRef}
+                            {...provided.draggableProps}
+                            isDragging={snapshot.isDragging}
+                            style={provided.draggableProps.style}
+                            imgSrc={imgUrl}
+                          >
+                            <BreakDelBtn
+                              imgSrc={imgUrl}
+                              twoToneColor="#e70303"
+                              onClick={() => {
+                                handleDel({ containerKey, boxId: id });
+                              }}
+                            />
+                          </BoxBreakItem>
+                        ) : (
+                          <BoxItem
+                            ref={provided.innerRef}
+                            {...provided.draggableProps}
+                            isDragging={snapshot.isDragging}
+                            style={provided.draggableProps.style}
+                            imgSrc={imgUrl}
+                          >
+                            <DelBtn
+                              twoToneColor="#e70303"
+                              onClick={() => {
+                                handleDel({ containerKey, boxId: id });
+                              }}
+                            />
+                          </BoxItem>
+                        )}
                       </Tooltip>
                     </Handle>
                   )}

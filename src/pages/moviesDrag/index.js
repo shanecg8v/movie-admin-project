@@ -60,9 +60,22 @@ const ToolBar = styled.div`
     flex: 1;
   }
 `;
+const Footer = styled.div`
+  display: flex;
+  justify-content: flex-end;
+  align-items: center;
+`;
+const SaveBtn = styled.button`
+  width: 112px;
+  height: 40px;
+  background: #8c99ae;
+  border-radius: 4px;
+  color: white;
+  border: none;
+  margin-top: 24px;
+`;
 //確認加入拖曳進去的時間是否超過總營業時間
 function checkFullTime({ dataArr, boxTime }) {
-  console.log("--", dataArr, boxTime, isNumber(boxTime));
   if (!!!isNumber(boxTime)) {
     console.error("boxTime輸入時間格式有誤");
     return;
@@ -75,7 +88,6 @@ function checkFullTime({ dataArr, boxTime }) {
     return;
   }
   const isFull = sumArrTime + boxTime > ALL_TIME_MINUTE ? true : false;
-  console.log("--**-*-", isFull, sumArrTime, boxTime);
 
   if (isFull) {
     message.error("當天時間電影設定已超過總營業時間，無法在增加");
@@ -95,6 +107,27 @@ const App = () => {
   });
   const [allDragBoxArr, setAllDragBoxArr] = useState([
     {
+      id: "break15",
+      _id: "break15",
+      movieCName: "間隔時間15分鐘",
+      movieTime: 15,
+      imgUrl: "break15",
+    },
+    {
+      id: "break30",
+      _id: "break30",
+      movieCName: "間隔時間30分鐘",
+      movieTime: 30,
+      imgUrl: "break30",
+    },
+    {
+      id: "break60",
+      _id: "break60",
+      movieCName: "間隔時間60分鐘",
+      movieTime: 60,
+      imgUrl: "break60",
+    },
+    {
       id: "item-1",
       _id: "644f92a2dd795250f85ce15a",
       movieCName: "鬼滅",
@@ -113,7 +146,7 @@ const App = () => {
       _id: "644f92a2dd795250f85ce15c",
       movieCName: "蝙蝠俠",
       movieTime: 150,
-      imgUrl: "https://picsum.photos/seed/12/200/300",
+      imgUrl: "https://picsum.photos/seed/125/200/300",
     },
     {
       id: "item-4",
@@ -164,24 +197,17 @@ const App = () => {
     if (!destination) {
       return;
     }
-    console.log(
-      "開始",
-      source,
-      source.droppableId,
-      "結束",
-      destination.droppableId
-    );
-    const isFull = checkFullTime({
-      dataArr: allDateDataObj[destination.droppableId],
-      boxTime: allDragBoxArr[source.index].movieTime,
-    });
-    if(isFull){
-      return;
-    }
+    // console.log(
+    //   "開始",
+    //   source,
+    //   source.droppableId,
+    //   "結束",
+    //   destination.droppableId
+    // );
+    let isFull = false;
     switch (source.droppableId) {
       //同container互相拖曳
       case destination.droppableId:
-        console.log("---", destination.droppableId);
         setAllDateDataObj((prevState) => ({
           ...prevState,
           [destination.droppableId]: reorder(
@@ -193,6 +219,13 @@ const App = () => {
         break;
       //上方複製元素置container
       case "BOXES":
+        isFull = checkFullTime({
+          dataArr: allDateDataObj[destination.droppableId],
+          boxTime: allDragBoxArr[source.index].movieTime,
+        });
+        if (isFull) {
+          return;
+        }
         setAllDateDataObj((prevState) => ({
           ...prevState,
           [destination.droppableId]: copy(
@@ -205,7 +238,13 @@ const App = () => {
         break;
       //不同container box互相拖曳
       default:
-        console.log("default");
+        isFull = checkFullTime({
+          dataArr: allDateDataObj[destination.droppableId],
+          boxTime: allDateDataObj[source.droppableId][source.index].movieTime,
+        });
+        if (isFull) {
+          return;
+        }
         setAllDateDataObj((prevState) => {
           return {
             ...prevState,
@@ -220,8 +259,9 @@ const App = () => {
         break;
     }
   };
-
-  console.log("state", allDateDataObj);
+  function handleSubmit() {
+    console.warn("目前電影資料", allDateDataObj);
+  }
   return (
     <>
       <PageTitle>電影上架</PageTitle>
@@ -282,6 +322,9 @@ const App = () => {
           ))}
         </Content>
       </DragDropContext>
+      <Footer>
+        <SaveBtn onClick={handleSubmit}>儲存</SaveBtn>
+      </Footer>
     </>
   );
 };

@@ -57,6 +57,21 @@ const BoxImg = styled.img`
   width: 100%;
   height: 100px;
   margin-bottom: 8px;
+  background-color: white;
+`;
+const BoxBreakImg = styled.div`
+  width: 100%;
+  height: 100px;
+  margin-bottom: 8px;
+  background-color: ${(props) => {
+    const type = props.imgUrl;
+    const colorObj = {
+      break15: "red",
+      break30: "blue",
+      break60: "green",
+    };
+    return colorObj[type];
+  }};
 `;
 const Time = styled.div`
   color: white;
@@ -92,6 +107,7 @@ function BoxList({ dataArr }) {
           {dataArr.map((item, index) => {
             const { id, movieCName,movieTime, imgUrl, width } = item;
             const tmpTime = convertToTime(movieTime);
+            const isBreakBlock = imgUrl.indexOf("break") !== -1;
             return (
               <Draggable key={id} draggableId={id} index={index}>
                 {(provided, snapshot) => (
@@ -105,7 +121,11 @@ function BoxList({ dataArr }) {
                         style={provided.draggableProps.style}
                         width={width}
                       >
-                        <BoxImg src={imgUrl} alt="" />
+                        {isBreakBlock ? (
+                          <BoxBreakImg imgUrl={imgUrl}/>
+                        ) : (
+                          <BoxImg src={imgUrl} alt="" />
+                        )}
                         <Time isDragging={snapshot.isDragging}>{tmpTime}</Time>
                         <BoxContent isDragging={snapshot.isDragging}>
                           {movieCName}
