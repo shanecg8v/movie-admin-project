@@ -5,19 +5,41 @@ import TheaterEdit from './Components/TheaterEdit'
 import { useId } from 'react'
 import _ from 'lodash'
 
-const { getTheaterList } = apiTheater
+const { getTheaterList, getTheaterRow } = apiTheater
 
 const Theater = () => {
-  // const id = useId();
+  const [rowData, setRowData] = useState(null);
   const [isModalOpen, setIsModalOpen] = useState(false)
   const [tadate, setTadate] = useState(null)
+  const [editMode, setEditMode] = useState(false)
+
   useEffect(() => {
     getTheaterList().then(({data}) => {
-      console.log(data)
       setTadate(data.data)
     })
 
   }, [])
+
+  const editRow = (id) => {
+    // let row = _.find(tadate, {_id: id})
+    getTheaterRow(id).then(({data:{data}})=> {
+      if (data) {
+        setEditMode(true)
+        setRowData(data)  
+        setIsModalOpen(true)
+      } else {
+        console.log('錯誤')
+      }
+    })
+
+    // setIsModalOpen(true)
+    
+  }
+
+  const toggleModal = () => {
+    isModalOpen ? setIsModalOpen(false) : setIsModalOpen(true)
+  }
+
 
   const columns = [
     {
@@ -28,22 +50,22 @@ const Theater = () => {
     {
       title: '影廳數量',
       dataIndex: 'roomCount',
-      key: _.uniqueId('roomCount')
+      key: 'roomCount'
     },
     {
       title: '座位總數',
       dataIndex: 'seatCount',
-      key: _.uniqueId('seatCount')
+      key: 'seatCount'
 
     },
     {
       title: '新增',
       dataIndex: '_id',
       width: 400,
-      render: (item, i) => (
+      render: (id, i) => (
         <>
           <Button className="me-3" key={i}>新增影廳</Button>
-          <Button>編輯</Button>
+          <Button onClick={()=>editRow(id)}>編輯</Button>
         </>
       )
     },
@@ -57,14 +79,15 @@ const Theater = () => {
     { isModalOpen 
       ?
       <>
-        <TheaterEdit /> 
+        {/* <TheaterEdit rowData={rowData}/>  */}
+        <TheaterEdit isEditMode={editMode} initialValues={rowData}/> 
       </>
       :
       <>
         <Button
             className="float-end m-3"
             size="large"
-            onClick={()=>{setIsModalOpen(true)}}
+            onClick={()=>{toggleModal()}}
           >
         新增影城
         </Button>
@@ -73,7 +96,7 @@ const Theater = () => {
           bordered
           dataSource={tadate}
           columns={columns}
-          key={_.uniqueId(tadate)}
+          rowKey='_id'
         />
       </>
     }

@@ -16,16 +16,19 @@ const DEV_URL = process.env.REACT_APP_PROXY_DEV_URL;
 const BASE_URL = isDev || isTest ? `${DEV_URL}api` : `${PRODUCT_URL}api`;
 const SYSTEM_NAME = process.env.REACT_APP_NAME || 'test';
 
-export default async (propsConfig) => {
-  const { customBaseUrl = '', url = '' } = propsConfig;
+// eslint-disable-next-line import/no-anonymous-default-export
+export default async (propsConfig) => { 
+
+  const { customBaseUrl = '', url = '',type = 'application/json', data } = propsConfig;
   const loadingId = uuidv4();
   const instance = axios.create({
     baseURL: customBaseUrl === '' ? BASE_URL : customBaseUrl,
     headers: { common: {} },
   });
   const { dispatch = () => {} } = store;
+  
+  instance.defaults.headers['Content-Type'] = type;
 
-  instance.defaults.headers['Content-Type'] = 'application/json';
   instance.interceptors.request.use(
     (config) => {
       const { withToken = true, withLoading = true } = config;
@@ -46,6 +49,13 @@ export default async (propsConfig) => {
           })
         );
       }
+      if (type ==='multipart/form-data') {
+        const formData = new FormData();
+        formData.append('file', data.get('file'));
+        config.data = formData;
+        config.headers['Content-Type'] = 'multipart/form-data';
+      }
+
       return config;
     },
     (error) => {
