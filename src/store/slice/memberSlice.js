@@ -11,11 +11,14 @@ export const memberSlice = createSlice({
       const data = action.payload
       const index = state.findIndex((d) => d._id === data._id)
       state[index] = data;
+    },
+    addMembers(state, action){
+      return [...state,...action.payload]
     }
   }
 })
 
-export const { setMembers, setMember } = memberSlice.actions
+export const { setMembers, setMember, addMembers } = memberSlice.actions
 const SYSTEM_NAME = process.env.REACT_APP_NAME;
 export const selectMember = (state) => {
   return state?.[SYSTEM_NAME].memberReducer;

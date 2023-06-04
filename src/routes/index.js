@@ -10,6 +10,7 @@ import Theater from "@/pages/theater";
 import RoomsIndex from "@/pages/theater/roomsIndex";
 import Login from "../pages/Login";
 import RouterInterceptor from "./RouterInterceptor";
+import MovieDrag from "../pages/moviesDrag";
 
 const routeConfig = [
   {
@@ -47,6 +48,10 @@ const routeConfig = [
       {
         path: "/seat",
         element: <Test />,
+      },
+      {
+        path: "/test",
+        element: <MovieDrag />,
       },
     ],
   },

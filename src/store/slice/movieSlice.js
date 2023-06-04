@@ -11,11 +11,14 @@ export const movieSlice = createSlice({
       const data = action.payload
       const index = state.findIndex((d) => d._id === data._id)
       state[index] = data;
+    },
+    addMovies(state, action){
+      return [...state,...action.payload]
     }
   }
 })
 
-export const { setMovies, setMovie } = movieSlice.actions
+export const { setMovies, setMovie, addMovies } = movieSlice.actions
 const SYSTEM_NAME = process.env.REACT_APP_NAME;
 export const selectMovie = (state) => {
   return state?.[SYSTEM_NAME].movieReducer;
