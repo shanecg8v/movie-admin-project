@@ -1,8 +1,9 @@
-import { Button, Table, Divider, Card, Col, DatePicker, Form, Row, Select, Space, Tag } from "antd"
+import { Button, Table, Divider, Typography, Card, Col, DatePicker, Form, Row, Select, Space, Tag } from "antd"
 import { useEffect, useState } from "react";
 import { apiTheater } from '@/api';
 import TheaterEdit from './Components/TheaterEdit'
 
+const { Title } = Typography;
 const { getTheaterList } = apiTheater
 const Theater = () => {
   const [isModalOpen, setIsModalOpen] = useState(false)
@@ -11,8 +12,8 @@ const Theater = () => {
   //   //   console.log(i)
   //   // })
   // }, [])
-  let aaa = () => {
-    console.log(121221)
+  let aaa = (row, i) => {
+    console.log(row, i)
   }
 
   const columns = [
@@ -28,10 +29,10 @@ const Theater = () => {
       title: '新增',
       dataIndex: 'rooms',
       width: 400,
-      render: () => (
+      render: (row, i) => (
         <>
           <Button className="me-3">新增影廳</Button>
-          <Button onClick={aaa()}>編輯</Button>
+          <Button onClick={()=>{aaa(row, i)}}>編輯</Button>
         </>
       )
     },
@@ -65,23 +66,57 @@ const Theater = () => {
     { isModalOpen 
       ?
       <>
-        <TheaterEdit /> 
+        {/* <TheaterEdit />  */}
       </>
       :
       <>
-        <Button
+        {/* <Button
             className="float-end m-3"
             size="large"
             onClick={()=>{setIsModalOpen(true)}}
           >
         新增影城
-        </Button>
-        <Table 
+        </Button> */}
+        {/* <div className="row justify-content-end align-items-end"> */}
+        <Row justify="end" align="middle">
+            <Title style={{ margin: 0 }} align="top" level={4}>影廳選擇</Title>
+          <Col span={5} offset={1}>
+            <Select
+              alias="top"
+              style={{ width: 400 }}
+              showSearch
+              size="large"
+              placeholder="Select a person"
+              optionFilterProp="children"
+              // onChange={onChange}
+              // onSearch={onSearch}
+              // filterOption={(input, option) =>
+              //   (option?.label ?? '').toLowerCase().includes(input.toLowerCase())
+              // }
+              // options={[
+              //   {
+              //     value: 'jack',
+              //     label: 'Jack',
+              //   },
+              //   {
+              //     value: 'lucy',
+              //     label: 'Lucy',
+              //   },
+              //   {
+              //     value: 'tom',
+              //     label: 'Tom',
+              //   },
+              // ]}
+            />
+          </Col>
+        </Row>
+
+        {/* <Table 
           rowClassName={() => 'editable-row'}
           bordered
           dataSource={data}
           columns={columns}
-        />
+        /> */}
       </>
     }
   </div>

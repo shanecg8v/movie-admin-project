@@ -6,7 +6,10 @@ import { apiTheater } from "@/api";
 const { postTheater, postTheaterImg } = apiTheater;
 const { TextArea } = Input;
 
-const TheaterEdit = () => {
+// const TheaterEdit = ({ address, description, img, mapUrl, name, phone, traffic }) => {
+  const TheaterEdit = (props) => {
+
+    const { isEditMode, initialValues } = props
 
     const normFile = (e) => {
       if (Array.isArray(e)) {
@@ -16,18 +19,21 @@ const TheaterEdit = () => {
     };
     const onFinish = async (values) => {
       
-      console.log(values)
-      const { fileList } = values;  
-      const formData = new FormData();
+      const { img } = values;  
+      
+      if(Array.isArray(img)) {
 
-      fileList.forEach((file) => {
-        formData.append('file', file.originFileObj);
-      });
+        const formData = new FormData();
 
-      const { data:{ fileUrl } } = await postTheaterImg(formData)
+        img.forEach((file) => {
+          formData.append('file', file.originFileObj);
+        });
 
-      delete values.fileList
-      values.img = fileUrl
+        const { data:{ fileUrl } } = await postTheaterImg(formData)
+        delete values.fileList
+        values.img = fileUrl
+      }
+
 
       const { data:{data} } = await postTheater({
         date: {
@@ -40,6 +46,7 @@ const TheaterEdit = () => {
     <>
       <div className="border m-5">
         <Form
+          initialValues={isEditMode ? initialValues : {}}
           className="m-5"
           labelCol = {{ 
             span: 5,  
@@ -62,6 +69,7 @@ const TheaterEdit = () => {
             name="address"
             label={<span className="fs-5">地址</span>}
             rules={[{ required: true, message: 'Please input your password!' }]}
+            // initialValue={address}
           >
             <Input />
           </Form.Item>
@@ -72,12 +80,11 @@ const TheaterEdit = () => {
           >
             <Input />
           </Form.Item>
-          <Form.Item name="fileList" label="Upload" valuePropName="fileList" getValueFromEvent={normFile}>
+          <Form.Item name="img" label="Upload" valuePropName="img" getValueFromEvent={normFile}>
             <Upload 
               action="/upload.do" 
               listType="picture-card"
-              // beforeUpload={beforeUpload}
-              // onChange={handleChange}
+              defaultFileList={isEditMode ? [{ url: initialValues.img }] : []}
             >
               <div>
                 <PlusOutlined />
@@ -86,11 +93,13 @@ const TheaterEdit = () => {
             </Upload>
           </Form.Item>
           <Form.Item 
+            name="description"
             label={<span className="fs-5">說明</span>}
           >
             <TextArea rows={4} />
           </Form.Item>
           <Form.Item 
+            name="traffic"
             label={<span className="fs-5">交通</span>}
           >
             <TextArea rows={4} />

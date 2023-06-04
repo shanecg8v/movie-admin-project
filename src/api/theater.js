@@ -8,10 +8,27 @@ export const getTheaterList = (props) => {
   });
 };
 
+export const getTheaterRow = (id) => {
+  console.log(id)
+  return axios({
+    url: `/admin/theaters/${id}`,
+    method: 'get',
+  });
+};
+
 export const postTheater = (props) => {
   return axios({
     url: `/admin/theaters`,
     method: 'post',
+    ...props,
+  });
+};
+
+export const patchTheater = (props) => {
+  console.log(props)
+  return axios({
+    url: `/admin/theaters/${props.id}`,
+    method: 'patch',
     ...props,
   });
 };
