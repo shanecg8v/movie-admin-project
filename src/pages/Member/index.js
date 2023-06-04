@@ -1,10 +1,10 @@
 
-import { Button, Form, Input, Modal, Table } from 'antd';
+import { Button, Col, Form, Input, Modal, Row, Table } from 'antd';
 import { useContext, useEffect, useState, createContext, useRef } from 'react';
 import MemberInfo from './Components/info';
-import { apiMemberGetAll, apiMemberAdd, apiMemberRemove, apiMemberUpdate, apiMovieGetAll, apiMovieAdd, apiMovieUpdate, apiMovieRemove } from '../../api';
+import { apiMemberGet, apiMemberAdd, apiMemberRemove, apiMemberUpdate } from '../../api';
 import { useDispatch, useSelector } from 'react-redux';
-import { selectMember, setMember, setMembers } from '../../store/slice/memberSlice';
+import { addMembers, selectMember, setMember, setMembers } from '../../store/slice/memberSlice';
 
 const EditableContext = createContext(null);
 const EditableRow = ({ index, ...props }) => {
@@ -49,8 +49,9 @@ const EditableCell = ({ title, editable, children, dataIndex, record, handleSave
 };
 
 const MemberManager = () => {
+  const pageSize = 5
   useEffect(() => {
-    apiMemberGetAll(1, 10)
+    apiMemberGet(1, pageSize * 2)
       .then(e => {
         const data = e?.data.data.map((d, i) => {
           return {
@@ -60,7 +61,6 @@ const MemberManager = () => {
         })
         updateMembers(data)
       })
-      .catch(e => console.log('err', e))
   }, [])
 
   const [userIndex, setUserIndex] = useState(-1);
@@ -102,8 +102,6 @@ const MemberManager = () => {
       }),
     };
   });
-
-  //------------------------------------redux
   const rdData = useSelector(selectMember)
   const dispatch = useDispatch()
   const updateMembers = (data) => {
@@ -111,32 +109,51 @@ const MemberManager = () => {
   }
   let editData
   const setEditData = (d) => { editData = d }
-  const modalOk = () => {
-    console.log('modalOk', editData)
+  const modalOk = async () => {
     if (editData != undefined) {
-      apiMemberUpdate(editData._id, editData)
-        .then(e => console.log('7-4T', e?.data.data))
-        .catch(e => console.log('7-4F', e.response.data))
-      dispatch(setMember(editData))
+      if (userIndex >= rdData.length) {
+        await apiMemberAdd(editData)
+          .then(e => {
+            dispatch(addMembers([editData]))
+            modalClose()
+          })
+      } else {
+        await apiMemberUpdate(editData._id, editData)
+          .then(e => {
+            dispatch(setMember(editData))
+            modalClose()
+          })
+      }
     }
-    editData = undefined
-    setUserIndex(-1)
   }
-  const modalCancel = () => {
-    console.log('modalCancel')
+  const modalClose = () => {
     setUserIndex(-1)
     editData = undefined
+  }
+
+  const pageChange = (current, pageSize) => {
+    if (rdData.length - current * pageSize != 0) return
+    apiMemberGet(current + 1, pageSize)
+      .then(e => {
+        const data = e?.data.data.map((d, i) => {
+          return {
+            ...d,
+            key: current * pageSize + i
+          }
+        })
+        dispatch(addMembers(data))
+      })
   }
 
   return (
     <div style={{ margin: "auto 5%", width: '90%' }}>
       <div>會員列表</div>
-      <div style={{ display: 'flex', justifyContent: 'flex-end' }}>
-        <Button type="primary" style={{ marginBottom: 16 }} >新增會員</Button>
-      </div>
-      <Table components={components} rowClassName={() => 'editable-row'} bordered dataSource={rdData} columns={columns} />
-      <Modal width={'80%'} open={userIndex > -1} onCancel={modalCancel} onOk={modalOk} key={userIndex}>
-        <MemberInfo index={userIndex} setData={setEditData} />
+      <Row justify='end' style={{ marginBottom: 16 }}>
+        <Col><Button type="primary" onClick={()=>setUserIndex(rdData.length)}>新增會員</Button></Col>
+      </Row>
+      <Table components={components} rowClassName={() => 'editable-row'} bordered dataSource={rdData} columns={columns} pagination={{ pageSize, onChange: pageChange }} />
+      <Modal width={'80%'} open={userIndex > -1} onCancel={modalClose} onOk={modalOk} key={userIndex}>
+        <MemberInfo index={userIndex} setData={setEditData} isAdd={userIndex >= rdData.length} />
       </Modal>
     </div>
   );

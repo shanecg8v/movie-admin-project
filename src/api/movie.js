@@ -1,6 +1,6 @@
 import axios from "@/utils/axios.js";
 
-export const movieGetAll = (pageNo,pageSize,search,sort) => {//7-6取得電影列表
+export const movieGet = (pageNo,pageSize,search,sort) => {//7-6取得電影列表
     return axios({
       url: `/admin/movies?pageNo=${pageNo}&pageSize=${pageSize}${search==undefined?'':`&search=${search}`}${sort==undefined?'':`&sort=${sort}`}`,
       method: "GET"

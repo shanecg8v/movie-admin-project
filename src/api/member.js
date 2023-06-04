@@ -1,6 +1,6 @@
 import axios from "@/utils/axios.js";
 
-export const memberGetAll = (pageNo,pageSize,search,sort) => {//7-2取得會員列表全部
+export const memberGet = (pageNo,pageSize,search,sort) => {//7-2取得會員列表全部
   return axios({
     url: `/admin/member?pageNo=${pageNo}&pageSize=${pageSize}${search==undefined?'':`&search=${search}`}${sort==undefined?'':`&sort=${sort}`}`,
     method: "GET"
