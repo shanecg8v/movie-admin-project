@@ -1,35 +1,32 @@
-import { Button, Checkbox, Col, DatePicker, Dropdown, Form, Input, Layout, List, Radio, Row, Space, Tooltip } from "antd"
+import { Button, Checkbox, Col, DatePicker, Form, Input, Layout, List, Radio, Row, Space } from "antd"
 import { selectMember } from "../../../store/slice/memberSlice"
 import { useSelector } from "react-redux"
 import dayjs from "dayjs"
 import { useState } from "react"
-import { PlusCircleOutlined, SearchOutlined } from '@ant-design/icons'
 
-export const FormListAdapter = ({params}) => {
-  const {fields, operation, getDatas, label} = params
-  const [isEdit,setIsEdit] = useState(false)
-  const getValues = ()=>{
+export const FormListAdapter = ({ params }) => {
+  const { fields, operation, getDatas, marginBottom } = params
+  const [isEdit, setIsEdit] = useState(false)
+  const getValues = () => {
     const values = getDatas().join(',')
-    return values==''?'無資料':values
+    return values == '' ? '無資料' : values
   }
 
   return <>
-    <Form.Item style={{ marginBottom: 0 }}>
-      <Row justify={isEdit?'space-between':'start'} align='middle' >
-        <Col>{label}:</Col>
-        <Col>{isEdit?
-        <Button type="dashed" onClick={() => operation.add()}>新增項目</Button>:
-        <Input onClick={() => setIsEdit(!isEdit)} value={getValues()} bordered={false}/>}</Col>
-        {isEdit&&<Col><Button type="dashed" onClick={()=>setIsEdit(!isEdit)}>{isEdit?'結束編輯':'編輯'}</Button></Col>}
+    <Form.Item style={{ marginBottom: isEdit ? 0 : marginBottom }}>
+      <Row>
+        <div style={{ wordWrap: false }}>{isEdit ?
+          <Button type="dashed" onClick={() => operation.add()}>新增項目</Button> : getValues()}</div>
+        <Button style={{ position: 'absolute', right: 0, top: 0 }} type="dashed" onClick={() => setIsEdit(!isEdit)}>{isEdit ? '結束編輯' : '編輯'}</Button>
       </Row>
     </Form.Item>
     {isEdit && fields.map((field, index) => (
-      <Form.Item key={field.key} style={{ marginBottom: 0 }}>
-        <Row justify='space-between'>
-          <Col>
+      <Form.Item key={field.key} style={{ marginBottom: index == fields.length - 1 ? marginBottom : 0 }}>
+        <Row justify='space-between' wrap={false}>
+          <Col flex='auto'>
             <Form.Item {...field} noStyle><Input /></Form.Item>
           </Col>
-          <Col>
+          <Col flex='none'>
             <Button type="dashed" onClick={() => operation.remove(field.name)}>移除</Button>
           </Col>
         </Row>
@@ -42,7 +39,7 @@ export const FormListAdapter = ({params}) => {
 const MemberInfo = ({ index, setData, isAdd }) => {
   const [form] = Form.useForm();
   let info = useSelector(selectMember)[index]
-  const getHobby = ()=>form.getFieldValue('hobby').filter(h => h != undefined && h != '')
+  const getHobby = () => form.getFieldValue('hobby')?.filter(h => h != undefined && h != '')
   const onValuesChange = (changedValues, allValues) => {
     info = { ...info, ...changedValues, hobby: getHobby() }
     setData(info)
@@ -72,11 +69,12 @@ const MemberInfo = ({ index, setData, isAdd }) => {
         </Form.Item>
         <div style={{ borderBottom: '1px solid' }} />
 
-        <Form.List label="興趣" name="hobby" initialValue={hobbyOfInfo}>
-        {(fields, operation )=><FormListAdapter params={{fields,operation,getDatas: getHobby,label:'興趣'}}/>}
+        <Form.Item label="興趣" style={{ marginBottom: 0 }}>
+        <Form.List name="hobby" initialValue={hobbyOfInfo}>
+          {(fields, operation) => <FormListAdapter params={{ fields, operation, getDatas: getHobby, marginBottom: 0 }} />}
         </Form.List>
+        </Form.Item>
         <div style={{ borderBottom: '1px solid' }} />
-
 
         <Form.Item label="性別" name="sex" style={{ marginBottom: 0 }} initialValue={info.sex}>
           <Radio.Group>
@@ -86,7 +84,7 @@ const MemberInfo = ({ index, setData, isAdd }) => {
         </Form.Item>
         <div style={{ borderBottom: '1px solid' }} />
         <Form.Item label="生日" name="birth" style={{ marginBottom: 0 }}>
-          <DatePicker defaultValue={dayjs(info.birth)} bordered={false}/>
+          <DatePicker defaultValue={dayjs(info.birth)} bordered={false} />
         </Form.Item>
         <div style={{ borderBottom: '1px solid' }} />
         <Form.Item label="會員點數" name="bounus" style={{ marginBottom: 0 }}>
