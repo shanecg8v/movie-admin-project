@@ -1,55 +1,45 @@
-import { Button, DatePicker, Form, Input, InputNumber, Radio, Select, Switch } from 'antd';
+import { Button, DatePicker, Form, Input, InputNumber, Select, Switch } from 'antd';
 import { useSelector } from 'react-redux';
-import { selectMovie,  } from '../../../store/slice/movieSlice';
-import moment from 'moment/moment';
-import { apiMovieUpdate } from '../../../api';
+import { selectMovie, } from '../../../store/slice/movieSlice';
+import { apiMovieAdd, apiMovieUpdate } from '../../../api';
+import dayjs from 'dayjs';
+import { FormListAdapter } from '../../Member/Components/info';
 
 const { RangePicker } = DatePicker;
-const MovieEdit = ({ index, cancelHandler }) => {
-  const editMovie = useSelector(selectMovie)[index]
+const MovieEdit = ({ index, cancelHandler, isAdd }) => {
+  const [form] = Form.useForm();
+  let editMovie = useSelector(selectMovie)[index]
 
   const onFinish = async (values) => {
-    const result = {
-      _id: editMovie._id,
-      cast: values.cast || editMovie.cast,
-      director: values.director || editMovie.director,
-      imgUrl: values.imgUrl || editMovie.imgUrl,
-      inTheatersTime: values.inTheatersTime || editMovie.inTheatersTime,
-      outOfTheatersTime:editMovie.outOfTheatersTime,
-      isAvaliableL: values.isAvaliableL || editMovie.isAvaliableL,
-      movieCName: values.movieCName || editMovie.movieCName,
-      movieEName: values.movieEName || editMovie.movieEName,
-      movieTime: values.movieTime || editMovie.movieTime,
-      rating: values.rating || editMovie.rating,
-      synopsis: values.synopsis || editMovie.synopsis,
-      videoUrl: values.videoUrl || editMovie.videoUrl,
-    };
-
-    if(typeof(result.cast)=='string'){
-      result.cast = result.cast.split(',')
+    const result = isAdd ? {} : { ...editMovie }
+    for (let key in values) {
+      if (values[key] !== undefined) {
+        result[key] = values[key];
+      }
     }
-    if(typeof(result.inTheatersTime)!='string'){
+
+    result.cast = getCast()
+    if (Array.isArray(result.inTheatersTime)) {
       result.outOfTheatersTime = result.inTheatersTime[1].toISOString()
       result.inTheatersTime = result.inTheatersTime[0].toISOString()
     }
-    result.isAvaliableL = result.isAvaliableL.toString()
-    result.movieTime = result.movieTime.toString()
-    console.log('result:', result);
-    await apiMovieUpdate(editMovie._id,result)
-    .then(e=>{
-      console.log('ss',e)
-      //dispatch(setMovie(result))
-    })
-    .catch(e=>console.log('ff',e.response.data))
-    cancelHandler(-1)
+    result.isAvaliableL = result.isAvaliableL ? result.isAvaliableL?.toString() : 'false'
+    result.movieTime = result.movieTime?.toString()
+    if (isAdd) {
+      await apiMovieAdd(result)
+        .then(e => cancelHandler(-1))
+    } else {
+      await apiMovieUpdate(editMovie._id, result)
+        .then(e => cancelHandler(-1))
+    }
   };
 
-  const onFinishFailed = (errorInfo) => {
-    console.log('表单提交失败:', errorInfo);
-  };
+  editMovie = isAdd ? {} : editMovie
+  const getCast = () => form.getFieldValue('cast')?.filter(c => c != undefined && c != '')
+  console.log(form)
 
   return (
-    <Form labelCol={{ span: 4 }} wrapperCol={{ span: 20 }} layout="horizontal" onFinish={onFinish} onFinishFailed={onFinishFailed}>
+    <Form form={form} labelCol={{ span: 4 }} wrapperCol={{ span: 20 }} layout="horizontal" onFinish={onFinish}>
       <Form.Item label="是否上架" name="isAvaliableL">
         <Switch defaultChecked={editMovie.isAvaliableL} />
       </Form.Item>
@@ -68,11 +58,15 @@ const MovieEdit = ({ index, cancelHandler }) => {
       <Form.Item label="導演" name="director">
         <Input defaultValue={editMovie.director} />
       </Form.Item>
-      <Form.Item label="卡司" name="cast">
-        <Input defaultValue={editMovie.cast.toString()} placeholder='請以","分隔' />
+
+      <Form.Item label="卡司" style={{ marginBottom: 0 }}>
+      <Form.List name="cast" initialValue={editMovie.cast}>
+        {(fields, operation) => <FormListAdapter params={{ fields, operation, getDatas: getCast, label: '卡司' }} />}
+      </Form.List>
       </Form.Item>
+
       <Form.Item label="上映時間" name="inTheatersTime">
-        <RangePicker format='YYYY/MM/DD HH:mm:ss' showTime={true} placeholder={['上映時間', '下檔時間']} defaultValue={[moment(editMovie.inTheatersTime), moment(editMovie.outOfTheatersTime)]} />
+        <RangePicker format='YYYY/MM/DD HH:mm:ss' showTime={true} placeholder={['上映時間', '下檔時間']} defaultValue={editMovie.inTheatersTime != undefined && editMovie.outOfTheatersTime != undefined ? [dayjs(editMovie.inTheatersTime), dayjs(editMovie.outOfTheatersTime)] : undefined} />
       </Form.Item>
       <Form.Item label="電影時間" name="movieTime">
         <InputNumber defaultValue={editMovie.movieTime} placeholder='單位:分鐘' />
@@ -85,7 +79,7 @@ const MovieEdit = ({ index, cancelHandler }) => {
         </Select>
       </Form.Item>
       <Form.Item label="概要" name="synopsis">
-        <Input.TextArea defaultValue={editMovie.synopsis} rows={4}/>
+        <Input.TextArea defaultValue={editMovie.synopsis} rows={4} />
       </Form.Item>
       <Form.Item wrapperCol>
         <div style={{ display: 'flex', justifyContent: 'flex-end' }}>
