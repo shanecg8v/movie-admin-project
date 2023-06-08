@@ -4,6 +4,8 @@ import { apiTheater } from '@/api';
 import TheaterEdit from './Components/TheaterEdit'
 import { useId } from 'react'
 import _ from 'lodash'
+import { Link } from "react-router-dom";
+
 
 const { getTheaterList, getTheaterRow } = apiTheater
 
@@ -36,11 +38,6 @@ const Theater = () => {
     
   }
 
-  const toggleModal = () => {
-    isModalOpen ? setIsModalOpen(false) : setIsModalOpen(true)
-  }
-
-
   const columns = [
     {
       title: '影城',
@@ -64,7 +61,9 @@ const Theater = () => {
       width: 400,
       render: (id, i) => (
         <>
-          <Button className="me-3" key={i}>新增影廳</Button>
+          <Button className="me-3" key={i}>
+            <Link to="/roomsEdit">新增影廳</Link>
+          </Button>
           <Button onClick={()=>editRow(id)}>編輯</Button>
         </>
       )
@@ -87,9 +86,8 @@ const Theater = () => {
         <Button
             className="float-end m-3"
             size="large"
-            onClick={()=>{toggleModal()}}
           >
-        新增影城
+            <Link to="/theaterEdit">新增影城</Link>
         </Button>
         <Table 
           rowClassName={() => 'editable-row'}

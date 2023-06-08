@@ -8,9 +8,12 @@ import Movie from "@/pages/Movie";
 import MovieShelf from "@/pages/MovieShelf";
 import Theater from "@/pages/theater";
 import RoomsIndex from "@/pages/theater/roomsIndex";
+import SeatsIndex from "@/pages/theater/seatsIndex";
 import Login from "../pages/Login";
 import RouterInterceptor from "./RouterInterceptor";
 import MovieDrag from "../pages/moviesDrag";
+import RoomsEdit from "../pages/theater/Components/RoomsEdit"; 
+import TheaterEdit from "../pages/theater/Components/TheaterEdit"; 
 
 const routeConfig = [
   {
@@ -47,11 +50,19 @@ const routeConfig = [
       },
       {
         path: "/seat",
-        element: <Test />,
+        element: <SeatsIndex />,
       },
       {
         path: "/test",
         element: <MovieDrag />,
+      },
+      {
+        path: "/theaterEdit",
+        element: <TheaterEdit />,
+      },
+      {
+        path: "/roomsEdit",
+        element: <RoomsEdit />,
       },
     ],
   },

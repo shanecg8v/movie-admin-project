@@ -24,6 +24,10 @@ const MySider = styled(Sider)`
 
 const items = [
   {
+    key: "首頁",
+    label: <MyLink to="/">首頁</MyLink>,
+  },
+  {
     key: "會員管理",
     label: <MyLink to="/member">會員管理</MyLink>,
   },
@@ -59,7 +63,7 @@ const Sidebar = () => {
   return (
     <MySider>
       <LogoWrapper>
-        <Logo src={logo} alt="" />
+          <Logo src={logo} alt="" />
       </LogoWrapper>
       <Menu
         mode="inline"
