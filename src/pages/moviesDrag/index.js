@@ -6,9 +6,9 @@ import { StrictModeDroppable } from "./components/StrictModeDroppable";
 import BoxList from "./components/BoxList";
 import DragContainer from "./components/DragContainer";
 import { Select, DatePicker, message } from "antd";
-import locale from "antd/es/date-picker/locale/zh_TW";
 import { ALL_TIME_MINUTE } from "./components/CommonVar";
 import { isNumber } from "../../utils/utilFunction";
+import ToolBarList from "./components/ToolBarList";
 
 const reorder = (list, startIndex, endIndex) => {
   const result = Array.from(list);
@@ -265,41 +265,7 @@ const App = () => {
   return (
     <>
       <PageTitle>電影上架</PageTitle>
-      <ToolBar>
-        <Select
-          defaultValue={{
-            value: "高雄影城",
-            label: "高雄影城",
-          }}
-          style={{
-            width: 200,
-          }}
-          onChange={() => {}}
-          options={[
-            {
-              value: "高雄影城",
-              label: "高雄影城",
-            },
-          ]}
-        />
-        <Select
-          defaultValue={{
-            value: "A影廳",
-            label: "A影廳",
-          }}
-          style={{
-            width: 200,
-          }}
-          onChange={() => {}}
-          options={[
-            {
-              value: "A影廳",
-              label: "A影廳",
-            },
-          ]}
-        />
-        <DatePicker locale={locale} onChange={() => {}} />
-      </ToolBar>
+      <ToolBarList/>
       <DragDropContext onDragEnd={onDragEnd}>
         <BoxList dataArr={allDragBoxArr} />
         <Content>
