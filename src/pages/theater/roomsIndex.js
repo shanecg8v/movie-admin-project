@@ -3,6 +3,7 @@ import { useEffect, useState } from "react";
 import { apiTheater } from '@/api';
 import Rooms from './Components/RoomsEdit'
 import _ from 'lodash'
+import { Link } from "react-router-dom";
 
 const { Title } = Typography;
 const { getTheaterList, getRooms } = apiTheater
@@ -48,34 +49,37 @@ const Theater = () => {
       </>
       :
       <>
-        <Row justify="end">
+        <Row justify="end" align="middle" className="mt-3">
+            <Title style={{ margin: 0 }} align="top" level={4}>影城選擇</Title>
+          <Col span={5} offset={1}>
+            <Select
+              alias="top"
+              style={{ width: 300 }}
+              showSearch
+              size="large"
+              placeholder="Select a person"
+              optionFilterProp="children"
+              onChange={onChange}
+              filterOption={(input, option) =>
+                (option?.label ?? '').toLowerCase().includes(input.toLowerCase())
+              }
+              options={options}
+            />
+          </Col>
           <Button
+            size="large"
+            >
+            <Link to="/roomsEdit">新增影廳</Link>
+          </Button>
+          {/* <Button
               // className="float-end m-3"
               size="large"
               onClick={()=>{toggleModal()}}
             >
           新增影廳
-          </Button>
+          </Button> */}
         </Row>
         <div className="container-fluid border mx-auto mt-3">
-          <Row justify="end" align="middle" className="mt-3">
-              <Title style={{ margin: 0 }} align="top" level={4}>影城選擇</Title>
-            <Col span={5} offset={1}>
-              <Select
-                alias="top"
-                style={{ width: 300 }}
-                showSearch
-                size="large"
-                placeholder="Select a person"
-                optionFilterProp="children"
-                onChange={onChange}
-                filterOption={(input, option) =>
-                  (option?.label ?? '').toLowerCase().includes(input.toLowerCase())
-                }
-                options={options}
-              />
-            </Col>
-          </Row>
           <Row className="mt-3 mb-3">
             <div className="container d-flex">
               {rooms && rooms.map(item => (

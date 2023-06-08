@@ -1,45 +1,87 @@
 import { Button, Table, Divider, Input, Card, Col, DatePicker, Form, Row, Select, Space, Tag, Upload } from "antd"
 import { PlusOutlined } from '@ant-design/icons';
 import { apiTheater } from "@/api";
+import { useEffect, useState } from "react";
+import _ from 'lodash'
 
 
-const { postTheater, postTheaterImg } = apiTheater;
-const { TextArea } = Input;
+const { postAddRoom, getTheaterList, getRoomTemplate } = apiTheater;
 
 
 const RoomsEdit = (props) => {
 
   const { isEditMode, initialValues } = props
+  const [options, setOptions] = useState(false)
+  const [roomsOpt, setRoomsOpt] = useState(false)
+  const [ticketOpt, setticketOpt] = useState(false)  
 
-  const normFile = (e) => {
-    if (Array.isArray(e)) {
-      return e;
-    }
-    return e?.fileList;
-  };
-  const onFinish = async (values) => {
-    
-    const { img } = values;  
-    
-    if(Array.isArray(img)) {
+  const typeOpt = [
+    {label: '數位 2D', value: '數位 2D'},
+    {label: '數位 3D', value: '數位 3D'},
+    {label: 'IMAX', value: 'IMAX'},
+  ]
 
-      const formData = new FormData();
-
-      img.forEach((file) => {
-        formData.append('file', file.originFileObj);
-      });
-
-      const { data:{ fileUrl } } = await postTheaterImg(formData)
-      delete values.fileList
-      values.img = fileUrl
-    }
-
-
-    const { data:{data} } = await postTheater({
-      date: {
-        ...values
-      }
+  useEffect(() => {
+    getTheaterList().then(({data:{data}})=>{
+      const temp = _.map(data, item => {
+        return {
+          ...item,
+          label: item.name,
+          value: item._id
+        }
+      })
+      setOptions(temp)
     })
+    getRoomTemplate().then(({data:{data: { seats, ticketTypes}}})=>{
+   
+      const temp = _.map(seats, item => {
+        return {
+          ...item,
+          label: item.name,
+          value: item._id
+        }
+      })
+      setRoomsOpt(temp)
+      const tempTicket = _.map(ticketTypes, item => {
+        return {
+          ...item,
+          label: item.name,
+          value: item._id
+        }
+      })
+      setticketOpt(tempTicket)
+    })
+  }, [])
+
+  const onFinish = async (values) => {
+    console.log(values)
+
+    const aaa = await postAddRoom(values)
+
+    console.log(555, aaa)
+
+    
+    // const { img } = values;  
+    
+    // if(Array.isArray(img)) {
+
+    //   const formData = new FormData();
+
+    //   img.forEach((file) => {
+    //     formData.append('file', file.originFileObj);
+    //   });
+
+    //   const { data:{ fileUrl } } = await postTheaterImg(formData)
+    //   delete values.fileList
+    //   values.img = fileUrl
+    // }
+
+
+    // const { data:{data} } = await postTheater({
+    //   date: {
+    //     ...values
+    //   }
+    // })
   }
 
   return (
@@ -59,51 +101,86 @@ const RoomsEdit = (props) => {
           onFinish={onFinish}
         >
           <Form.Item 
+            name="theaterId"
+            label={<span className="fs-5">影城選擇</span>}
+            rules={[{ required: true }]}
+          >
+            <Select
+              alias="top"
+              style={{ width: 300 }}
+              showSearch
+              placeholder="Select a person"
+              optionFilterProp="children"
+              // onChange={onChange}
+              filterOption={(input, option) =>
+                (option?.label ?? '').toLowerCase().includes(input.toLowerCase())
+              }
+              options={options}
+            />
+          </Form.Item>
+          <Form.Item 
             name="name"
-            label={<span className="fs-5">影城</span>}
-            rules={[{ required: true, message: 'Please input your password!' }]}
+            label={<span className="fs-5">影廳名稱</span>}
+            rules={[{ required: true }]}
           >
             <Input />
           </Form.Item>
           <Form.Item 
-            name="address"
-            label={<span className="fs-5">地址</span>}
-            rules={[{ required: true, message: 'Please input your password!' }]}
-            // initialValue={address}
+            name="type"
+            label={<span className="fs-5">影廳類型</span>}
+            rules={[{ required: true }]}
           >
-            <Input />
+            <Select
+              alias="top"
+              style={{ width: 300 }}
+              showSearch
+              placeholder="Select a person"
+              optionFilterProp="children"
+              // onChange={onChange}
+              filterOption={(input, option) =>
+                (option?.label ?? '').toLowerCase().includes(input.toLowerCase())
+              }
+              options={typeOpt}
+            />
           </Form.Item>
           <Form.Item 
-            name="phone"
-            label={<span className="fs-5">電話</span>}
-            rules={[{ required: true, message: 'Please input your password!' }]}
+            name="ticketTypeIds"
+            label={<span className="fs-5">可售票種</span>}
+            rules={[{ required: true }]}
           >
-            <Input />
-          </Form.Item>
-          <Form.Item name="img" label="Upload" valuePropName="img" getValueFromEvent={normFile}>
-            <Upload 
-              action="/upload.do" 
-              listType="picture-card"
-              defaultFileList={isEditMode ? [{ url: initialValues.img }] : []}
-            >
-              <div>
-                <PlusOutlined />
-                <div style={{ marginTop: 8 }}>Upload</div>
-              </div>
-            </Upload>
+            <Select
+              mode="multiple"
+              alias="top"
+              style={{ width: 300 }}
+              showSearch
+              placeholder="Select a person"
+              optionFilterProp="children"
+              // onChange={onChange}
+              filterOption={(input, option) =>
+                (option?.label ?? '').toLowerCase().includes(input.toLowerCase())
+              }
+              options={ticketOpt}
+            />
           </Form.Item>
           <Form.Item 
-            name="description"
-            label={<span className="fs-5">說明</span>}
+            name="seatExampleId"
+            label={<span className="fs-5">座位表</span>}
+            rules={[{ required: true }]}
           >
-            <TextArea rows={4} />
+            <Select
+              alias="top"
+              style={{ width: 300 }}
+              showSearch
+              placeholder="Select a person"
+              optionFilterProp="children"
+              // onChange={onChange}
+              filterOption={(input, option) =>
+                (option?.label ?? '').toLowerCase().includes(input.toLowerCase())
+              }
+              options={roomsOpt}
+            />
           </Form.Item>
-          <Form.Item 
-            name="traffic"
-            label={<span className="fs-5">交通</span>}
-          >
-            <TextArea rows={4} />
-          </Form.Item>
+        
           <Form.Item 
             label=' '
           >
@@ -113,9 +190,6 @@ const RoomsEdit = (props) => {
               >
                 新增
             </Button>
-            {/* <Button type="primary" htmlType="submit">
-                Submit
-            </Button> */}
           </Form.Item>
         </Form>
       </div>

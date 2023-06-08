@@ -51,4 +51,31 @@ export const getRooms = (id) => {
   });
 };
 
+export const getRoomTemplate = () => {
+  
+  return axios({
+    url: `/admin/seats/examples`,
+    method: 'get',
+  });
+};
+
+export const postAddRoom = (props) => {
+  
+  return axios({
+    url: `/admin/rooms`,
+    method: 'post',
+    ...props,
+  });
+};
+
+export const getSeatMap = ( theaterId = '' , roomId = '' ) => {
+  console.log(theaterId, roomId)
+  return axios({
+    url: `/admin/seats?theaterId=${theaterId}&roomId=${roomId}`,
+    method: 'get',
+  });
+};
+
+
+
 
