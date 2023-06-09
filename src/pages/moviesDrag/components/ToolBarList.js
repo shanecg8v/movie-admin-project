@@ -55,7 +55,7 @@ function ToolBarList() {
   const roomOptions =
     selectedCinemaData && selectedCinemaData.rooms
       ? selectedCinemaData.rooms.map((room) => ({
-          label: room._id,
+          label: room.name,
           value: room._id,
         }))
       : [];

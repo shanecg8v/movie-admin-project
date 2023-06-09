@@ -261,11 +261,37 @@ const App = () => {
   };
   function handleSubmit() {
     console.warn("目前電影資料", allDateDataObj);
+    let tmpObj = {};
+    for (const [key, value] of Object.entries(allDateDataObj)) {
+      console.log(`${key}: ${value}`);
+      tmpObj[key] = calculateStartTime(value);
+    }
+    console.log("***", tmpObj);
+    function calculateStartTime(arr) {
+      let startTime = new Date("2023-06-09T08:00:00"); // 設定起始時間為 08:00
+
+      for (let i = 0; i < arr.length; i++) {
+        const movieTime = arr[i].movieTime;
+        const minutesToAdd = movieTime % 60;
+        const hoursToAdd = Math.floor(movieTime / 60);
+
+        startTime.setMinutes(startTime.getMinutes() + minutesToAdd);
+        startTime.setHours(startTime.getHours() + hoursToAdd);
+
+        arr[i].startTime = startTime.toLocaleTimeString("en-US", {
+          hour: "numeric",
+          minute: "numeric",
+          hour12: false,
+        });
+      }
+
+      return arr;
+    }
   }
   return (
     <>
       <PageTitle>電影上架</PageTitle>
-      <ToolBarList/>
+      <ToolBarList />
       <DragDropContext onDragEnd={onDragEnd}>
         <BoxList dataArr={allDragBoxArr} />
         <Content>
