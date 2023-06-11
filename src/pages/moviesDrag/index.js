@@ -11,9 +11,9 @@ import ToolBarList from "./components/ToolBarList";
 import { Content, PageTitle, ToolBar, Footer, SaveBtn } from "./styles";
 import _ from "lodash";
 import { apiSession } from "../../api";
+import moment from "moment";
 
-const {postSessionsList} = apiSession;
-
+const { postSessionsList } = apiSession;
 
 const reorder = (list, startIndex, endIndex) => {
   const result = Array.from(list);
@@ -26,7 +26,12 @@ const copy = (source, destination, droppableSource, droppableDestination) => {
   const sourceClone = Array.from(source);
   const destClone = Array.from(destination);
   const item = sourceClone[droppableSource.index];
-  destClone.splice(droppableDestination.index, 0, { ...item, id: uuid() ,sessionId:"",movieId:item._id});
+  destClone.splice(droppableDestination.index, 0, {
+    ...item,
+    id: uuid(),
+    sessionId: "",
+    movieId: item._id,
+  });
   return destClone;
 };
 
@@ -45,18 +50,20 @@ const move = (source, destination, droppableSource, droppableDestination) => {
 
 //確認加入拖曳進去的時間是否超過總營業時間
 function checkFullTime({ dataArr, boxTime }) {
-  if (!!!isNumber(boxTime)) {
+  const myBoxTime = parseInt(boxTime);
+  if (!!!isNumber(myBoxTime)) {
     console.error("boxTime輸入時間格式有誤");
     return;
   }
   const sumArrTime = dataArr.reduce((accumulator, item) => {
-    return accumulator + item.movieTime;
+    return accumulator + parseInt(item.movieTime);
   }, 0);
+
   if (!!!isNumber(sumArrTime)) {
     console.error("dataArr輸入時間格式有誤");
     return;
   }
-  const isFull = sumArrTime + boxTime > ALL_TIME_MINUTE ? true : false;
+  const isFull = sumArrTime + myBoxTime > ALL_TIME_MINUTE ? true : false;
 
   if (isFull) {
     message.error("當天時間電影設定已超過總營業時間，無法在增加");
@@ -65,9 +72,9 @@ function checkFullTime({ dataArr, boxTime }) {
 }
 //缺限制超過時間就不能再拖拉防呆
 const App = () => {
-  const [currentSearchObj,setCurrentSearchObj] = useState({
-    theaterId:"",
-    roomInfo:""
+  const [currentSearchObj, setCurrentSearchObj] = useState({
+    theaterId: "",
+    roomInfo: "",
   });
   const [allDateDataObj, setAllDateDataObj] = useState({});
   const [allDragBoxArr, setAllDragBoxArr] = useState([]);
@@ -134,26 +141,27 @@ const App = () => {
     }
   };
   async function handleSubmit() {
-    console.warn("目前電影資料", allDateDataObj);
+    console.warn("目前電影資料1", allDateDataObj);
     let tmpObj = {};
-    for (const [key, value] of Object.entries(allDateDataObj)) {
-      tmpObj[key] = postCalcProcess(value);
+    for (const [key, value] of Object.entries(_.cloneDeep(allDateDataObj))) {
+      tmpObj[key] = postCalcProcess(value, key);
     }
+    console.warn("目前電影資料2", tmpObj);
+
     try {
       const res = await postSessionsList({
         data: {
-          sessionData:tmpObj
+          sessionData: tmpObj,
         },
       });
     } catch (error) {
-      console.log("🚀 ~ file: index.js:251 ~ handleSubmit ~ error:", error)
-      
+      console.log("🚀 ~ file: index.js:251 ~ handleSubmit ~ error:", error);
     }
 
     //整理送出的資料
-    function postCalcProcess(arr) {
+    function postCalcProcess(arr, key) {
       let rawStartTime = 0;
-      let startTime = new Date("2023-06-09T08:00:00"); // 設定起始時間為 08:00
+      let startTime = new Date(`${key}T08:00:00`); // 設定起始時間為 08:00
       for (let i = 0; i < arr.length; i++) {
         const movieTime = parseInt(arr[i].movieTime);
         rawStartTime += movieTime;
@@ -164,8 +172,8 @@ const App = () => {
         arr[i] = {
           ...arr[i],
           startTime: rawStartTime,
-          datetime:startTime,
-          ...currentSearchObj
+          datetime: moment(startTime).format("YYYY-MM-DD HH:mm:ss"),
+          ...currentSearchObj,
         };
         delete arr[i].id;
         delete arr[i]._id;
