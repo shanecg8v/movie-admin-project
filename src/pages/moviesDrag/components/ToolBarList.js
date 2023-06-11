@@ -1,28 +1,26 @@
-import { Select, DatePicker, message,Button } from "antd";
+import { Select, DatePicker, message, Button } from "antd";
 import { useEffect, useRef, useState } from "react";
 import styled from "styled-components";
-import { apiTheater } from "../../../api";
+import { apiSession, apiTheater } from "../../../api";
 import locale from "antd/es/date-picker/locale/zh_TW";
 import moment from "moment";
 import dayjs from "dayjs";
+import _ from "lodash";
+import { ToolBar } from "../styles";
+import { v4 as uuid } from "uuid";
+
 const { getFrontTheaterList } = apiTheater;
 const { RangePicker } = DatePicker;
 
-const ToolBar = styled.div`
-  display: flex;
-  gap: 24px;
-  margin-bottom: 24px;
-  > div {
-    flex: 1;
-  }
-`;
-function ToolBarList() {
+const { getSessionsList } = apiSession;
+
+function ToolBarList(props) {
+  const { setAllDateDataObj, setAllDragBoxArr, setCurrentSearchObj } = props;
   const [allData, setAllData] = useState([]);
   const [loading, setLoading] = useState(true);
   const [selectedCinema, setSelectedCinema] = useState("");
   const [selectedRoom, setSelectedRoom] = useState("");
   const [dateValue, setDateValue] = useState([null, null]);
-  console.log("***", dateValue[0], dayjs(dateValue[0]).format("YYYY-MM-DD"));
   const rangePickerRef = useRef(null);
   const disabledDate = (current) => {
     if (!dateValue) {
@@ -32,7 +30,7 @@ function ToolBarList() {
     const tooEarly = dateValue[1] && dateValue[1].diff(current, "days") >= 7;
     return !!tooEarly || !!tooLate;
   };
-  
+
   const handleCinemaChange = (value) => {
     setSelectedCinema(value);
     setSelectedRoom("");
@@ -62,8 +60,6 @@ function ToolBarList() {
   const handleRangePickerChange = (dates) => {
     if (dates && dates[0]) {
       const endDate = dates[0].clone().add(7, "days");
-      console.log("🚀 ~ file: ToolBarList.js:64 ~ handleRangePickerChange ~ endDate:", endDate)
-      
       setDateValue([dates[0], endDate]);
     } else if (dates && dates[1]) {
       const startDate = dates[1].clone().subtract(7, "days");
@@ -71,25 +67,53 @@ function ToolBarList() {
     }
     // 手動關閉日曆面板
     rangePickerRef.current.blur();
-  };   
-  const handleSearch = async()=>{
-    console.log(dateValue,selectedCinema,selectedRoom)
-    if (dateValue && selectedCinema && selectedRoom) {
-      const startDate = dayjs(dateValue[0]).format("YYYY-MM-DD");
-      const endDate = dayjs(dateValue[1]).format("YYYY-MM-DD");
-      const tmpObj = {
-        cinemaId: selectedCinema,
-        roomId: selectedRoom,
-        startDate,
-        endDate,
-      };
-      console.log(tmpObj);
-      // 執行資料庫查詢或其他操作
-    } else {
-      // 處理日期、影城或影廳未選擇的情況
-      console.log("請選擇日期、影城和影廳");
+  };
+  const handleSearch = async () => {
+    try {
+      if (dateValue && selectedCinema && selectedRoom) {
+        setCurrentSearchObj(prev=>{
+          return {
+            theaterId: selectedCinema,
+            roomInfo: selectedRoom,
+          };
+        });
+        const startDate = dayjs(dateValue[0]).format("YYYY-MM-DD");
+        const endDate = dayjs(dateValue[1]).format("YYYY-MM-DD");
+        const tmpObj = {
+          cinemaId: selectedCinema,
+          roomId: selectedRoom,
+          startDate,
+          endDate,
+        };
+        //測試資料使用
+        // const tmpObj = {
+        //   cinemaId: "64664fc9421a72b472ed34ee",
+        //   roomId: "646650c55be7e59dcab209e5",
+        //   startDate: "2023-06-01",
+        //   endDate: "2023-06-10",
+        // };
+        const {
+          data: { data },
+        } = await getSessionsList({ params: tmpObj });
+        const { movieList, sessionData } = data;
+        const modifiedSessionData = _.mapValues(sessionData, (value) => {
+          return value.map((item) => ({
+            ...item,
+            id: uuid(),
+          }));
+        });
+        setAllDateDataObj(modifiedSessionData);
+        setAllDragBoxArr(movieList);
+      } else {
+        // 處理日期、影城或影廳未選擇的情況
+        message.error("請選擇日期、影城和影廳");
+        throw new Error("請選擇日期、影城和影廳");
+      }
+    } catch (error) {
+      console.log("🚀 ~ file: ToolBarList.js:106 ~ handleSearch ~ error:", error)
+      
     }
-  }   
+  };
   useEffect(() => {
     fetchData();
     async function fetchData() {

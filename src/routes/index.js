@@ -38,7 +38,7 @@ const routeConfig = [
       },
       {
         path: "/movieShelf",
-        element: <MovieShelf />,
+        element: <MovieDrag />,
       },
       {
         path: "/theater",
@@ -52,10 +52,10 @@ const routeConfig = [
         path: "/seat",
         element: <SeatsIndex />,
       },
-      {
-        path: "/test",
-        element: <MovieDrag />,
-      },
+      // {
+      //   path: "/test",
+      //   element: <MovieDrag />,
+      // },
       {
         path: "/theaterEdit",
         element: <TheaterEdit />,
