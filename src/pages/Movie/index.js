@@ -2,26 +2,19 @@ import { Button, Col, Row, Table } from "antd";
 import { useEffect, useState } from "react";
 import MovieEdit from "./Components/MovieEdit";
 import { apiMovieGet } from "../../api";
-import { useDispatch, useSelector } from "react-redux";
-import { addMovies, selectMovie, setMovies } from "../../store/slice/movieSlice";
 import dayjs from "dayjs";
 
-const Movie = () => {
-  const [movieIndex, setMovieIndex] = useState(-1);
-  const pageSize = 5
+const Movie = () => {  
+  const [page, setPage] = useState(1);
+  const [pageSize, setPageSize] = useState(5);
+  const [editData, setEditData] = useState();
+  const [totalPages, setTotalPages] = useState()
   useEffect(() => {
-    apiMovieGet(1, pageSize * 2)
-      .then(e => {
-        const data = e?.data.data.map((d, i) => {
-          return { ...d, key: i }
-        })
-        updateMovies(data)
-      })
-  }, [movieIndex])
-  const rdData = useSelector(selectMovie)
-  const dispatch = useDispatch()
-  const updateMovies = (data) => {
-    dispatch(setMovies(data))
+    reFleshTableData()
+  }, [page,pageSize,editData])
+  const [rdData, setRdData] = useState([])
+  const onClose = () => {
+    setEditData(undefined)
   }
   const defaultColumns = [
     {
@@ -45,7 +38,7 @@ const Movie = () => {
       dataIndex: 'operation',
       render: (_, record) =>
         rdData.length >= 1 ? (<div style={{ textAlign: 'center', color: 'blue' }}>
-          <a onClick={() => setMovieIndex(record.key)}>編輯</a></div>
+          <a onClick={() => setEditData(record)}>編輯</a></div>
         ) : null,
     },
   ];
@@ -63,28 +56,35 @@ const Movie = () => {
   });
 
   const pageChange = (current, pageSize) => {
-    if (rdData.length - current * pageSize != 0) return
-    apiMovieGet(current + 1, pageSize)
+    console.log("pageChange")
+    setPage(current)
+    setPageSize(pageSize)
+  }
+  const reFleshTableData = ()=>{
+    console.log("reFlesh", page, pageSize)
+    apiMovieGet(page, pageSize)
       .then(e => {
         const data = e?.data.data.map((d, i) => {
           return {
             ...d,
-            key: current * pageSize + i
+            key: page * pageSize + i
           }
         })
-        dispatch(addMovies(data))
+        setRdData(data)
+        setTotalPages(e?.data.totalCounts)
       })
   }
 
   return (
     <div style={{ margin: "auto 5%", width: '90%' }}>
-      {movieIndex > -1 ? <MovieEdit index={movieIndex} cancelHandler={setMovieIndex} style={{ marginTop: 20 }} isAdd={movieIndex >= rdData.length} /> : <>
+      {editData == undefined ? <>
         <div>新增電影</div>
         <Row justify='end' style={{ marginBottom: 16 }} gutter={10}>
-          <Col><Button type="primary" onClick={() => setMovieIndex(rdData.length)}>新增電影</Button></Col>
+          <Col><Button type="primary" onClick={() => setEditData({})}>新增電影</Button></Col>
         </Row>
-        <Table rowClassName={() => 'editable-row'} bordered dataSource={rdData} columns={columns} pagination={{ pageSize, onChange: pageChange }} />
-      </>}
+        <Table rowClassName={() => 'editable-row'} bordered dataSource={rdData} columns={columns} pagination={{current:page, pageSize, total: totalPages, onChange: pageChange }} />
+      </>:
+      <MovieEdit data={editData} onClose={onClose} />}
     </div>
   );
 }

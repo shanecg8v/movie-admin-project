@@ -4,26 +4,24 @@ import { useState } from "react"
 import { apiMemberAdd, apiMemberUpdate } from "../../../api"
 
 export const FormListAdapter = ({ params }) => {
-  const { fields, operation, getDatas, marginBottom } = params
+  const { fields, operation, errors, getDatas, marginBottom, label } = params
   const [isEdit, setIsEdit] = useState(false)
   const getValues = () => {
     const values = getDatas()?.join(',')
-    return values == '' ? '無資料' : values
+    return values == '' ? {value:'無資料', style:{border:'1px red solid'}} : {value: values}
   }
-
   return <>
-    <Form.Item style={{ marginBottom: isEdit ? 0 : marginBottom }}>
-      <Row>
-        <div style={{ wordWrap: false }}>{isEdit ?
-          <Button type="dashed" onClick={() => operation.add()}>新增項目</Button> : getValues()}</div>
-        <Button style={{ position: 'absolute', right: 0, top: 0 }} type="dashed" onClick={() => setIsEdit(!isEdit)}>{isEdit ? '結束編輯' : '編輯'}</Button>
+    <Form.Item label={label} noStyle rules={[validateRequire]} hasFeedback={true} required>
+      <Row justify={isEdit?'end':'space-between'} align='middle' wrap={false}>
+        <Col flex={!isEdit?'auto':''}>{isEdit? <Button type="dashed" onClick={() => operation.add()}>新增項目</Button> : <Input disabled {...getValues()}/>}</Col>
+        <Col><Button type="dashed" onClick={() => setIsEdit(!isEdit)}>{isEdit ? '結束編輯' : '編輯'}</Button></Col>
       </Row>
     </Form.Item>
     {isEdit && fields.map((field, index) => (
-      <Form.Item key={field.key} style={{ marginBottom: index == fields.length - 1 ? marginBottom : 0 }}>
+      <Form.Item key={field.key} noStyle>
         <Row justify='space-between' wrap={false}>
           <Col flex='auto'>
-            <Form.Item {...field} noStyle><Input /></Form.Item>
+            <Form.Item {...field} rules={[validateRequire]} hasFeedback={true} noStyle><Input /></Form.Item>
           </Col>
           <Col flex='none'>
             <Button type="dashed" onClick={() => operation.remove(field.name)}>移除</Button>
@@ -34,9 +32,9 @@ export const FormListAdapter = ({ params }) => {
   </>
 }
 
-const validateRequire = {validator:(sender, value) => {
-  console.log('validateRequire')
-  if (!value) return Promise.reject('此欄位必填!');
+export const validateRequire = {validator:(sender, value) => {
+  console.log('required', sender)
+  if ((typeof(value)!='boolean' && !value) || (Array.isArray(value) && value.length == 0)) return Promise.reject('此欄位必填!');
   return Promise.resolve();
 },required:true}
 const validateEmail = {validator:(sender, value) => {
