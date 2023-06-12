@@ -101,6 +101,7 @@ const Seats = () => {
 
   const getOption = () => {
     const option = {
+      legend: {},
       xAxis: { 
         type: 'value',
         show: false,
@@ -205,3 +206,6 @@ const Seats = () => {
   )
 }
 export default Seats
+
+
+

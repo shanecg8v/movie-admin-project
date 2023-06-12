@@ -1,5 +1,6 @@
 import * as user from '@/api/user';
 import * as theater from '@/api/theater';
+import * as statistics from '@/api/statistics';
 import * as session from "@/api/session";
 
 import { memberGet,memberAdd,memberRemove,memberUpdate } from './member';
@@ -7,6 +8,7 @@ import { movieAdd, movieGet, movieRemove, movieUpdate } from './movie';
 
 export const apiUser = user;
 export const apiTheater = theater;
+export const apiStatistics = statistics;
 export const apiMemberGet = memberGet;
 export const apiMemberAdd= memberAdd;
 export const apiMemberUpdate = memberUpdate;
