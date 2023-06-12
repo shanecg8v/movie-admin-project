@@ -7,6 +7,13 @@ export const getTheaterList = (props) => {
     ...props,
   });
 };
+export const getFrontTheaterList = (props) => {
+  return axios({
+    url: `/theaters`,
+    method: "GET",
+    ...props,
+  });
+};
 
 export const getTheaterRow = (id) => {
   console.log(id)
