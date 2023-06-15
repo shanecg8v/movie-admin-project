@@ -1,24 +1,18 @@
 
-import { Button, Col, Modal, Row, Table } from 'antd';
+import { Button, Col, Row, Table } from 'antd';
 import { useEffect, useState } from 'react';
 import MemberInfo from './Components/info';
-import { apiMemberGet, apiMemberAdd, apiMemberRemove, apiMemberUpdate } from '../../api';
-import { useDispatch, useSelector } from 'react-redux';
-import { addMembers, selectMember, setMember, setMembers } from '../../store/slice/memberSlice';
+import { apiMemberGet } from '../../api';
 
 const MemberManager = () => {
-  const pageSize = 5
+  const [page, setPage] = useState(1);
+  const [pageSize, setPageSize] = useState(5);
+  const [editData, setEditData] = useState();
+  const [totalPages, setTotalPages] = useState()
   useEffect(() => {
-    apiMemberGet(1, pageSize * 2, undefined, 'asc')
-      .then(e => {
-        const data = e?.data.data.map((d, i) => {
-          return { ...d, key: i }
-        })
-        dispatch(setMembers(data))
-      })
-  }, [])
+    reFleshMemberTable()
+  }, [page,pageSize,editData])
 
-  const [userIndex, setUserIndex] = useState(-1);
   const defaultColumns = [
     {
       title: <div style={{ textAlign: 'center' }}>帳號</div>,
@@ -40,7 +34,7 @@ const MemberManager = () => {
       dataIndex: 'operation',
       render: (_, record) =>
         rdData.length >= 1 ? (<div style={{ textAlign: 'center', color: 'blue' }}>
-          <a onClick={() => { console.log(record); setUserIndex(record.key) }}>編輯</a></div>
+          <a onClick={() => { setEditData(record) }}>編輯</a></div>
         ) : null,
     },
   ];
@@ -56,57 +50,43 @@ const MemberManager = () => {
       }),
     };
   });
-  const rdData = useSelector(selectMember)
-  const dispatch = useDispatch()
-  let editData
-  const setEditData = (d) => { editData = d }
-  const modalOk = async () => {
-    if (editData != undefined) {
-      if (userIndex >= rdData.length) {
-        await apiMemberAdd(editData)
-          .then(e => {
-            const data = { ...editData, key: rdData.length }
-            dispatch(addMembers([data]))
-            modalClose()
-          })
-      } else {
-        await apiMemberUpdate(editData._id, editData)
-          .then(e => {
-            dispatch(setMember(editData))
-            modalClose()
-          })
-      }
-    }
-  }
-  const modalClose = () => {
-    setUserIndex(-1)
-    editData = undefined
-  }
 
+  const [rdData, setRdData] = useState([])
+  const onClose = () => {
+    setEditData(undefined)
+  }
   const pageChange = (current, pageSize) => {
-    if (rdData.length - current * pageSize != 0) return
-    apiMemberGet(current + 1, pageSize)
+    console.log("pageChange")
+    setPage(current)
+    setPageSize(pageSize)
+  }
+  const reFleshMemberTable = ()=>{
+    console.log("reFlesh", page, pageSize)
+    apiMemberGet(page, pageSize, undefined, 'asc')
       .then(e => {
         const data = e?.data.data.map((d, i) => {
           return {
             ...d,
-            key: current * pageSize + i
+            key: page * pageSize + i
           }
         })
-        dispatch(addMembers(data))
+        setRdData(data)
+        setTotalPages(e?.data.totalCounts)
       })
   }
 
   return (
     <div style={{ margin: "auto 5%", width: '90%' }}>
-      <div>會員列表</div>
-      <Row justify='end' style={{ marginBottom: 16 }}>
-        <Col><Button type="primary" onClick={() => setUserIndex(rdData.length)}>新增會員</Button></Col>
-      </Row>
-      <Table rowClassName={() => 'editable-row'} bordered dataSource={rdData} columns={columns} pagination={{ pageSize, onChange: pageChange }} />
-      <Modal width={'80%'} open={userIndex > -1} onCancel={modalClose} onOk={modalOk} key={userIndex}>
-        <MemberInfo index={userIndex} setData={setEditData} isAdd={userIndex >= rdData.length} />
-      </Modal>
+      {editData == undefined ?
+        <div>
+          <div>會員列表</div>
+          <Row justify='end' style={{ marginBottom: 16 }}>
+            <Col><Button type="primary" onClick={() => setEditData({})}>新增會員</Button></Col>
+          </Row>
+          <Table rowClassName={() => 'editable-row'} bordered dataSource={rdData} columns={columns} pagination={{ current: page, pageSize, total: totalPages, onChange: pageChange }} />
+        </div> :
+        <MemberInfo data={editData} onClose={onClose} />
+      }
     </div>
   );
 };
