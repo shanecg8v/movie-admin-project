@@ -1,4 +1,3 @@
-
 import { Button, Col, Row, Table } from 'antd';
 import { useEffect, useState } from 'react';
 import MemberInfo from './Components/info';
@@ -87,6 +86,7 @@ const MemberManager = () => {
         </div> :
         <MemberInfo data={editData} onClose={onClose} />
       }
+
     </div>
   );
 };
