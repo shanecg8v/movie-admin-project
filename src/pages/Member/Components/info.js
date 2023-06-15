@@ -4,14 +4,14 @@ import { useState } from "react"
 import { apiMemberAdd, apiMemberUpdate } from "../../../api"
 
 export const FormListAdapter = ({ params }) => {
-  const { fields, operation, errors, getDatas, marginBottom, label } = params
+  const { fields, operation, errors, getDatas, validator, label } = params
   const [isEdit, setIsEdit] = useState(false)
   const getValues = () => {
     const values = getDatas()?.join(',')
     return values == '' ? {value:'無資料', style:{border:'1px red solid'}} : {value: values}
   }
   return <>
-    <Form.Item label={label} noStyle rules={[validateRequire]} hasFeedback={true} required>
+    <Form.Item label={label} noStyle>
       <Row justify={isEdit?'end':'space-between'} align='middle' wrap={false}>
         <Col flex={!isEdit?'auto':''}>{isEdit? <Button type="dashed" onClick={() => operation.add()}>新增項目</Button> : <Input disabled {...getValues()}/>}</Col>
         <Col><Button type="dashed" onClick={() => setIsEdit(!isEdit)}>{isEdit ? '結束編輯' : '編輯'}</Button></Col>
@@ -21,7 +21,7 @@ export const FormListAdapter = ({ params }) => {
       <Form.Item key={field.key} noStyle>
         <Row justify='space-between' wrap={false}>
           <Col flex='auto'>
-            <Form.Item {...field} rules={[validateRequire]} hasFeedback={true} noStyle><Input /></Form.Item>
+            <Form.Item {...field} {...validator} style={{marginBottom:0}}><Input /></Form.Item>
           </Col>
           <Col flex='none'>
             <Button type="dashed" onClick={() => operation.remove(field.name)}>移除</Button>
@@ -33,8 +33,7 @@ export const FormListAdapter = ({ params }) => {
 }
 
 export const validateRequire = {validator:(sender, value) => {
-  console.log('required', sender)
-  if ((typeof(value)!='boolean' && !value) || (Array.isArray(value) && value.length == 0)) return Promise.reject('此欄位必填!');
+  if (typeof(value)!='boolean' && !value) return Promise.reject('此欄位必填!');
   return Promise.resolve();
 },required:true}
 const validateEmail = {validator:(sender, value) => {

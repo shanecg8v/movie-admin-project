@@ -1,7 +1,7 @@
 import { Button, Col, Row, Table } from 'antd';
 import { useEffect, useState } from 'react';
 import MemberInfo from './Components/info';
-import { apiMemberGet, apiMemberAdd, apiMemberRemove, apiMemberUpdate } from '../../api';
+import { apiMemberGet } from '../../api';
 
 const MemberManager = () => {
   const [page, setPage] = useState(1);
@@ -49,11 +49,11 @@ const MemberManager = () => {
       }),
     };
   });
+
   const [rdData, setRdData] = useState([])
   const onClose = () => {
     setEditData(undefined)
   }
-
   const pageChange = (current, pageSize) => {
     console.log("pageChange")
     setPage(current)
@@ -82,11 +82,10 @@ const MemberManager = () => {
           <Row justify='end' style={{ marginBottom: 16 }}>
             <Col><Button type="primary" onClick={() => setEditData({})}>新增會員</Button></Col>
           </Row>
-          <Table rowClassName={() => 'editable-row'} bordered dataSource={rdData} columns={columns} pagination={{current:page, pageSize, total: totalPages, onChange: pageChange }} />
+          <Table rowClassName={() => 'editable-row'} bordered dataSource={rdData} columns={columns} pagination={{ current: page, pageSize, total: totalPages, onChange: pageChange }} />
         </div> :
-        <MemberInfo data={editData} onClose={onClose}/>
+        <MemberInfo data={editData} onClose={onClose} />
       }
-
 
     </div>
   );

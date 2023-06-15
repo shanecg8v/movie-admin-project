@@ -4,7 +4,7 @@ import MovieEdit from "./Components/MovieEdit";
 import { apiMovieGet } from "../../api";
 import dayjs from "dayjs";
 
-const Movie = () => {  
+const Movie = () => {
   const [page, setPage] = useState(1);
   const [pageSize, setPageSize] = useState(5);
   const [editData, setEditData] = useState();
@@ -82,9 +82,9 @@ const Movie = () => {
         <Row justify='end' style={{ marginBottom: 16 }} gutter={10}>
           <Col><Button type="primary" onClick={() => setEditData({})}>新增電影</Button></Col>
         </Row>
-        <Table rowClassName={() => 'editable-row'} bordered dataSource={rdData} columns={columns} pagination={{current:page, pageSize, total: totalPages, onChange: pageChange }} />
-      </>:
-      <MovieEdit data={editData} onClose={onClose} />}
+        <Table rowClassName={() => 'editable-row'} bordered dataSource={rdData} columns={columns} pagination={{ current: page, pageSize, total: totalPages, onChange: pageChange }} />
+      </> :
+        <MovieEdit data={editData} onClose={onClose} />}
     </div>
   );
 }
