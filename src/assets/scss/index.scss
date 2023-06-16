@@ -10,3 +10,5 @@
 @import "./basic/common.scss";//專案樣式
 @import "./basic/variables";//專案變數
 @import "./overwrite/common";//由於bootstrap按鈕狀態變數顏色只能調深淺度，所以用蓋的
+@import "./table/common";
+

@@ -14,7 +14,7 @@ const HeaderStyle = styled(Header)`
   display: flex;
   align-items: center;
   justify-content: space-between;
-  background-color: #7e7e7e;
+  background-color: rgb(130 142 157);
 `;
 
 const UserBtn = styled(Button)`

@@ -8,10 +8,12 @@ import { Select, DatePicker, message } from "antd";
 import { ALL_TIME_MINUTE } from "./components/CommonVar";
 import { isNumber } from "../../utils/utilFunction";
 import ToolBarList from "./components/ToolBarList";
-import { Content, PageTitle, ToolBar, Footer, SaveBtn } from "./styles";
+import { PageTitle, ToolBar, Footer, SaveBtn } from "./styles";
 import _ from "lodash";
 import { apiSession } from "../../api";
 import moment from "moment";
+import { Layout } from "antd"
+const { Content } = Layout;
 
 const { postSessionsList } = apiSession;
 
@@ -184,12 +186,22 @@ const App = () => {
 
   return (
     <>
-      <PageTitle>電影上架</PageTitle>
-      <ToolBarList
-        setAllDateDataObj={setAllDateDataObj}
-        setAllDragBoxArr={setAllDragBoxArr}
-        setCurrentSearchObj={setCurrentSearchObj}
-      />
+    <Content
+      style={{
+        margin: '24px 16px',
+        padding: 24,
+        minHeight: 280,
+        background: 'rgb(230 231 232)'
+      }}
+    >
+      <div style={{ margin: "auto 5%", width: '90%' }}>
+        <h2>電影上架</h2>
+        <ToolBarList
+          setAllDateDataObj={setAllDateDataObj}
+          setAllDragBoxArr={setAllDragBoxArr}
+          setCurrentSearchObj={setCurrentSearchObj}
+        />
+      </div>
       {isShow && (
         <>
           <DragDropContext onDragEnd={onDragEnd}>
@@ -220,6 +232,7 @@ const App = () => {
           </Footer>
         </>
       )}
+    </Content>
     </>
   );
 };

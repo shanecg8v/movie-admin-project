@@ -1,9 +1,10 @@
-import { Button, Table, Divider, Typography, Card, Col, DatePicker, Form, Row, Select, Space, Tag } from "antd"
+import { Button, Typography, Card, Col, Row, Select, Layout } from "antd"
 import { useEffect, useState } from "react";
 import { apiTheater } from '@/api';
 import Rooms from './Components/RoomsEdit'
 import _ from 'lodash'
 import { Link } from "react-router-dom";
+const { Content } = Layout;
 
 const { Title } = Typography;
 const { getTheaterList, getRooms } = apiTheater
@@ -38,7 +39,15 @@ const Theater = () => {
 
 
   return (
-    <div style={{ margin: "3%", width: '90%' }}>
+  <Content
+    style={{
+      margin: '24px 16px',
+      padding: 24,
+      minHeight: 280,
+      background: 'rgb(230 231 232)'
+    }}
+  >
+    <div style={{ margin: "auto 5%", width: '90%' }}>
       <h2>
         影廳管理   
       </h2>
@@ -99,7 +108,8 @@ const Theater = () => {
         </div>
       </>
     }
-  </div>
+    </div>
+  </Content>
   )
 }
 export default Theater

@@ -1,16 +1,21 @@
-import NiceModal from '@ebay/nice-modal-react';
-import ExampleModal from '../components/Modal/ExampleModal';
 import ReactEcharts from 'echarts-for-react';
-import styled from "styled-components";
 import { useEffect, useState } from "react";
-import { Button, Table, Divider, Typography, Card, Col, DatePicker, Form, Row, Select, Space, Tag, Tabs } from "antd";
+import { Layout, Space, Tag, Tabs } from "antd";
 // import type { TabsProps } from 'antd';
 import { apiStatistics } from '@/api';
+const { Content } = Layout;
+const { TabPane } = Tabs;
 
 const { getBranchRp } = apiStatistics
 
 
 function Information() {
+
+  const tabStyle = {
+    fontSize: '32px', 
+    // color: '#0159a1',
+    fontWeight: 'bold'
+  };
 
   const [size, setSize] = useState('small');
 
@@ -56,7 +61,8 @@ function Information() {
             left: 15,
             top: 15,
             textStyle: {
-              fontSize: 20
+              fontSize: 20,
+              color: '#1677ff'
             },
           },
           xAxis: { ...prevChartData.xAxis, data: xData },
@@ -76,28 +82,44 @@ function Information() {
   
   return (
   <>
-    <Tabs
-      defaultActiveKey="1"
-      type="line"
-      size={size}
-      items={new Array(3).fill(null).map((_, i) => {
-        const id = String(i + 1);
-        return {
-          label: `Card Tab ${id}`,
-          key: id,
-          children: `Content of card tab ${id}`,
-        };
-      })}
-    />
-
-    <ReactEcharts
-      option={chartData}
-      style={{ width: '70%', height: '50vh', backgroundColor: '#ffffff', }}
-      // onEvents={{
-      //   click: (params) => handleSeatClick(params.name),
-      // }}
-    />
-
+    <Content
+      style={{
+        margin: '24px 16px',
+        padding: 24,
+        minHeight: 280,
+        background: 'rgb(230 231 232)'
+      }}
+    >
+      <div style={{ margin: "auto 5%", width: '90%' }}>
+      <Space
+        className='cantainer'
+        direction="vertical"
+        size="middle"
+        // align=" "
+        style={{
+          display: 'flex',
+          width: '80vw',
+        }}
+      >
+        <Tabs
+          defaultActiveKey="1"
+          type="line"
+          size="large"
+          >
+            <TabPane tab={<span style={tabStyle}>消費紀錄</span>} key="1">
+              暫無資料
+            </TabPane>
+          </Tabs>
+        <ReactEcharts
+          option={chartData}
+          style={{ width: '50%', height: '50vh', backgroundColor: '#ffffff', }}
+          // onEvents={{
+            //   click: (params) => handleSeatClick(params.name),
+            // }}
+            />
+      </Space>  
+      </div>
+    </Content>
   </>
   );
 }

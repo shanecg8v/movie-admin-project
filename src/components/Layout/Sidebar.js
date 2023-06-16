@@ -13,15 +13,11 @@ const LogoWrapper = styled.div`
   align-items: center;
   justify-content: center;
   height: 64px;
+  margin: 50px 0 50px 0;
 `;
 const MyLink = styled(Link)`
   text-decoration: none;
 `
-const MySider = styled(Sider)`
-  box-shadow: rgba(0, 0, 0, 0.16) 0px 1px 4px;
-  width:200px;
-`;
-
 const items = [
   {
     key: "首頁",
@@ -61,7 +57,9 @@ const items = [
 
 const Sidebar = () => {
   return (
-    <MySider>
+    <Sider
+      width={300}
+    >
       <LogoWrapper>
           <Logo src={logo} alt="" />
       </LogoWrapper>
@@ -70,11 +68,12 @@ const Sidebar = () => {
         // defaultSelectedKeys={["會員管理"]}
         style={{
           height: "100%",
-          borderRight: 0,
+          borderRight: 0, 
+          fontSize: '22px' 
         }}
         items={items}
       />
-    </MySider>
+    </Sider>
   );
 };
 

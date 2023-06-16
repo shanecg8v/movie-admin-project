@@ -139,6 +139,7 @@ function ToolBarList(props) {
           style={{
             width: 200,
           }}
+          size="large" 
         />
         <Select
           placeholder="選擇影廳"
@@ -149,6 +150,7 @@ function ToolBarList(props) {
           style={{
             width: 200,
           }}
+          size="large" 
         />
         <RangePicker
           ref={rangePickerRef}
@@ -162,7 +164,10 @@ function ToolBarList(props) {
           // changeOnBlur
         />
         {/* <DatePicker locale={locale} onChange={() => {}} /> */}
-        <Button type="primary" onClick={handleSearch}>
+        <Button 
+          onClick={handleSearch}
+          size="large" 
+        >
           查詢
         </Button>
       </ToolBar>
