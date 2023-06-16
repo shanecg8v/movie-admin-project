@@ -1,4 +1,4 @@
-import { Button, Card, Col, DatePicker, Form, Row, Select, Space, Tag } from "antd"
+import { Button, Card, Col, DatePicker, Form, Row, Select, Space, Tag, Layout } from "antd"
 
 
 
@@ -20,7 +20,8 @@ const MovieShelf = () => {
 
   }
 
-  return (<div style={{ width: '90%', margin: 'auto' }}>
+  return (
+  <div style={{ width: '90%', margin: 'auto' }}>
     <Form.Item label="選擇影城">
       <Select onChange={chg} defaultValue={'option1'}>
         <Select.Option value="option1">台北</Select.Option>

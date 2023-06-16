@@ -1,9 +1,10 @@
 import 'echarts/lib/component/grid'
-import { Button, Table, Divider, Typography, Card, Col, DatePicker, Form, Row, Select, Space, Tag } from "antd"
+import { Layout, Typography, Col, Row, Select, } from "antd"
 import ReactEcharts from 'echarts-for-react';
 import { useEffect, useState } from "react";
 import { apiTheater } from '@/api';
 import _ from 'lodash'
+const { Content } = Layout;
 
 const { Title } = Typography;
 const { getTheaterList, getRooms, getSeatMap } = apiTheater
@@ -149,7 +150,15 @@ const Seats = () => {
 
 
   return (
-    <div style={{ margin: "3%", width: '90%' }}>
+  <Content
+    style={{
+      margin: '24px 16px',
+      padding: 24,
+      minHeight: 280,
+      background: 'rgb(230 231 232)'
+    }}
+  >
+    <div style={{ margin: "auto 5%", width: '90%' }}>
       <h2>
         座位  
       </h2>
@@ -202,7 +211,8 @@ const Seats = () => {
         />
       </Row>
     
-  </div>
+    </div>
+  </Content>
   )
 }
 export default Seats

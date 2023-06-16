@@ -1,8 +1,9 @@
-import { Button, Col, Row, Table } from "antd";
+import { Button, Col, Row, Table, Layout } from "antd";
 import { useEffect, useState } from "react";
 import MovieEdit from "./Components/MovieEdit";
 import { apiMovieGet } from "../../api";
 import dayjs from "dayjs";
+const { Content } = Layout;
 
 const Movie = () => {
   const [page, setPage] = useState(1);
@@ -36,10 +37,17 @@ const Movie = () => {
     {
       title: <div style={{ textAlign: 'center' }}>電影販售管理</div>,
       dataIndex: 'operation',
-      render: (_, record) =>
-        rdData.length >= 1 ? (<div style={{ textAlign: 'center', color: 'blue' }}>
-          <a onClick={() => setEditData(record)}>編輯</a></div>
-        ) : null,
+      align: 'center',
+      render: (_, record) => (
+        <>
+          <Button 
+            onClick={()=>setEditData(record)}
+            size="large" 
+          >
+          編輯
+          </Button>
+        </>
+      )
     },
   ];
   const columns = defaultColumns.map((col) => {
@@ -76,16 +84,44 @@ const Movie = () => {
   }
 
   return (
-    <div style={{ margin: "auto 5%", width: '90%' }}>
-      {editData == undefined ? <>
-        <div>新增電影</div>
-        <Row justify='end' style={{ marginBottom: 16 }} gutter={10}>
-          <Col><Button type="primary" onClick={() => setEditData({})}>新增電影</Button></Col>
-        </Row>
-        <Table rowClassName={() => 'editable-row'} bordered dataSource={rdData} columns={columns} pagination={{ current: page, pageSize, total: totalPages, onChange: pageChange }} />
-      </> :
-        <MovieEdit data={editData} onClose={onClose} />}
-    </div>
+    <Content
+      style={{
+        margin: '24px 16px',
+        padding: 24,
+        minHeight: 280,
+        background: 'rgb(230 231 232)'
+      }}
+    >
+      <div style={{ margin: "auto 5%", width: '90%' }}>
+        {editData == undefined ? <>
+          <h2>新增電影</h2>
+          <Row 
+            justify='end' 
+            style={{ marginBottom: 16 }} 
+            gutter={10}
+          >
+            <Col>
+              <Button 
+                size="large" 
+                onClick={() => 
+                setEditData({})}
+              >
+                新增電影
+              </Button>
+            </Col>
+          </Row>
+          <Table 
+            rowClassName={() => 'editable-row'} 
+            bordered 
+            dataSource={rdData} 
+            columns={columns} 
+            pagination={{ current: page, pageSize, total: totalPages, onChange: pageChange }} 
+            className="custom-table"
+          />
+        </> :
+          <MovieEdit data={editData} onClose={onClose} />}
+      </div>
+    </Content>
   );
 }
 
