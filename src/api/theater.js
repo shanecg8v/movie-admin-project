@@ -27,7 +27,7 @@ export const postTheater = (props) => {
   return axios({
     url: `/admin/theaters`,
     method: 'post',
-    ...props,
+    data: props
   });
 };
 
@@ -66,12 +66,12 @@ export const getRoomTemplate = () => {
   });
 };
 
-export const postAddRoom = (props) => {
+export const postAddRoom = (data) => {
   
   return axios({
     url: `/admin/rooms`,
     method: 'post',
-    ...props,
+    data
   });
 };
 
@@ -82,6 +82,24 @@ export const getSeatMap = ( theaterId = '' , roomId = '' ) => {
     method: 'get',
   });
 };
+
+export const deleteRoom = (id) => {
+  
+  return axios({
+    url: `/admin/rooms?id=${id}`,
+    method: 'delete',
+  });
+};
+
+export const patchRoom = (data) => {
+  return axios({
+    url: `/admin/rooms`,
+    method: 'patch',
+    data
+  });
+};
+
+
 
 
 

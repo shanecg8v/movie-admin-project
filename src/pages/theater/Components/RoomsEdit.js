@@ -1,7 +1,8 @@
-import { Button, Table, Divider, Input, Card, Col, DatePicker, Form, Row, Select, Space, Tag, Upload } from "antd"
+import { Button, message, Input, Form, Select} from "antd"
 import { PlusOutlined } from '@ant-design/icons';
 import { apiTheater } from "@/api";
 import { useEffect, useState } from "react";
+import { useNavigate  } from "react-router-dom";
 import _ from 'lodash'
 
 
@@ -10,6 +11,7 @@ const { postAddRoom, getTheaterList, getRoomTemplate } = apiTheater;
 
 const RoomsEdit = (props) => {
 
+  const navigate = useNavigate();
   const { isEditMode, initialValues } = props
   const [options, setOptions] = useState(false)
   const [roomsOpt, setRoomsOpt] = useState(false)
@@ -54,39 +56,21 @@ const RoomsEdit = (props) => {
   }, [])
 
   const onFinish = async (values) => {
-    console.log(values)
 
-    const aaa = await postAddRoom(values)
+    try {
+      await postAddRoom(values)
+    } catch (error) {
+      return console.log('error', error) 
+    }
 
-    console.log(555, aaa)
+  message.success("新增成功");
+  navigate('/room');
 
-    
-    // const { img } = values;  
-    
-    // if(Array.isArray(img)) {
-
-    //   const formData = new FormData();
-
-    //   img.forEach((file) => {
-    //     formData.append('file', file.originFileObj);
-    //   });
-
-    //   const { data:{ fileUrl } } = await postTheaterImg(formData)
-    //   delete values.fileList
-    //   values.img = fileUrl
-    // }
-
-
-    // const { data:{data} } = await postTheater({
-    //   date: {
-    //     ...values
-    //   }
-    // })
   }
 
   return (
     <>
-      <div className="border m-5">
+      <div className="input-tb">
         <Form
           initialValues={isEditMode ? initialValues : {}}
           className="m-5"
@@ -182,11 +166,12 @@ const RoomsEdit = (props) => {
           </Form.Item>
         
           <Form.Item 
-            label=' '
+             wrapperCol={{ offset: 16  }}
           >
               <Button 
                 type="primary" 
                 htmlType="submit"
+                size="large"
               >
                 新增
             </Button>
