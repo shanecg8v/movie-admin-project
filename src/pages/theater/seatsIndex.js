@@ -1,19 +1,27 @@
 import 'echarts/lib/component/grid'
-import { Layout, Typography, Col, Row, Select, } from "antd"
+import { Layout, Typography, Col, Row, Select, Button, message } from "antd"
 import ReactEcharts from 'echarts-for-react';
 import { useEffect, useState } from "react";
 import { apiTheater } from '@/api';
 import _ from 'lodash'
+import { useDispatch, useSelector } from "react-redux";
+import { setTheater, setRoom, setSeats, selectTheater } from "@/store/slice/theaterSlice";
+import { useNavigate  } from "react-router-dom";
+
 const { Content } = Layout;
 
 const { Title } = Typography;
-const { getTheaterList, getRooms, getSeatMap } = apiTheater
+const { getTheaterList, getRooms, getSeatMap, patchRoom } = apiTheater
 
 const Seats = () => {
 
+
+  const { theaterId, roomId, seats} = useSelector(selectTheater)
+  
+  const dispatch = useDispatch();
+
   const [options, setOptions] = useState(false)
   const [rooms, setRooms] = useState([])
-  const [selectedTheaterId, setSelectedTheaterId] = useState(null);
 
   useEffect(() => {
     getTheaterList().then(({data:{data}})=>{
@@ -29,7 +37,7 @@ const Seats = () => {
   }, [])
 
   const onChange = (id) => {
-    setSelectedTheaterId(id)
+    dispatch(setTheater(id))
     getRooms(id).then(({data:{data:{rooms}}}) => {
       const temp = _.map(rooms, item => {
         return {
@@ -40,11 +48,13 @@ const Seats = () => {
       })
       setRooms(temp)
     })
+  
   }
   const [seatData, setSeatData] = useState([])
 
   const getSeat = (roomId) => {
-    getSeatMap(selectedTheaterId, roomId).then(({data: { data }}) => {
+    dispatch(setRoom(roomId))
+    getSeatMap(theaterId, roomId).then(({data: { data }}) => {
       let { seats } = data[0]
       seats = seats.map(p => {
         return {
@@ -53,6 +63,7 @@ const Seats = () => {
         }
       })
       setSeatData(seats)
+      dispatch(setSeats(seats))
     })
   }
 
@@ -99,6 +110,23 @@ const Seats = () => {
     
   }
 
+  const saveSeats = async () => {
+    let results
+    try {
+      results = await patchRoom({
+        theaterId,
+        roomId,
+        seats: seatData 
+      })
+      
+    } catch (error) {
+      return message.error('修改失敗')
+    }
+
+    console.log('results', results)
+    message.success("修改成功");
+
+  }
 
   const getOption = () => {
     const option = {
@@ -162,11 +190,11 @@ const Seats = () => {
       <h2>
         座位  
       </h2>
-      <Row justify="center" align="middle" className="mt-3">
+      <Row className="d-flex justify-content-center align-items-center mb-3">
         <Col> 
           <Title style={{ margin: 0 }} align="top" level={4}>影城選擇</Title>
         </Col>
-        <Col span={5} offset={1}>
+        <Col className="ms-3">
           <Select
             alias="top"
             style={{ width: 300 }}
@@ -181,8 +209,10 @@ const Seats = () => {
             options={options} 
           />
         </Col>
-        <Title style={{ margin: 0 }} align="top" level={4}>影城選擇</Title>
-        <Col span={5} offset={1}>
+        <Col className="ms-3">
+          <Title style={{ margin: 0 }} align="top" level={4}>影城選擇</Title>
+        </Col>
+        <Col className="ms-3">
           <Select
             alias="top"
             style={{ width: 300 }}
@@ -198,10 +228,10 @@ const Seats = () => {
           />
         </Col>
       </Row>
-      <Row  justify="center" className="mt-5">
+      <Row className="d-flex justify-content-center align-items-center mb-3">
         <h2> 螢幕 </h2>
       </Row>
-      <Row justify="center">
+      <Row className="d-flex justify-content-center align-items-center mb-3">
         <ReactEcharts
           option={getOption()}
           style={{ width: '900px', height: '600px', backgroundColor: '#ffffff', }}
@@ -209,6 +239,18 @@ const Seats = () => {
             click: (params) => handleSeatClick(params.name),
           }}
         />
+      </Row>
+      <Row
+        className="d-flex justify-content-center align-items-center mb-3"
+      >
+        <Button
+          style={{
+            width: '50%',
+          }}
+          size="large"
+          width={500}
+          onClick={saveSeats}
+        >儲存</Button>
       </Row>
     
     </div>

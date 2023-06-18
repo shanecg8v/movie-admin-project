@@ -1,6 +1,7 @@
-import { Button, Table, Divider, Input, Card, Col, DatePicker, Form, Row, Select, Space, Tag, Upload } from "antd"
+import { Button, message, Input, Form, Upload } from "antd"
 import { PlusOutlined } from '@ant-design/icons';
 import { apiTheater } from "@/api";
+import { useNavigate  } from "react-router-dom";
 
 
 const { postTheater, postTheaterImg } = apiTheater;
@@ -8,6 +9,7 @@ const { TextArea } = Input;
 
 const TheaterEdit = (props) => {
 
+  const navigate = useNavigate();
   const { isEditMode, initialValues } = props
 
   const normFile = (e) => {
@@ -17,7 +19,7 @@ const TheaterEdit = (props) => {
     return e?.fileList;
   };
   const onFinish = async (values) => {
-    
+
     const { img } = values;  
     
     if(Array.isArray(img)) {
@@ -34,16 +36,21 @@ const TheaterEdit = (props) => {
     }
 
 
-    const { data:{data} } = await postTheater({
-      date: {
-        ...values
-      }
-    })
+    try {
+      await postTheater(values)
+    } catch (error) {
+      message.error('新增失敗')
+      return console.log('error', error) 
+    }
+
+    message.success("新增成功");
+    navigate('/theater');
+
   }
 
   return (
     <>
-      <div className="border m-5">
+      <div className="input-tb">
         <Form
           initialValues={isEditMode ? initialValues : {}}
           className="m-5"
@@ -92,26 +99,34 @@ const TheaterEdit = (props) => {
             </Upload>
           </Form.Item>
           <Form.Item 
+            name="mapUrl"
+            label={<span className="fs-5">地圖</span>}
+            rules={[{ required: true, message: 'Please input your mapUrl!' }]}
+          >
+            <Input />
+          </Form.Item>
+          <Form.Item 
             name="description"
             label={<span className="fs-5">說明</span>}
+            rules={[{ required: true, message: 'Please input your description!' }]}
           >
             <TextArea rows={4} />
           </Form.Item>
           <Form.Item 
             name="traffic"
             label={<span className="fs-5">交通</span>}
+            rules={[{ required: true, message: 'Please input traffic!' }]}
           >
             <TextArea rows={4} />
           </Form.Item>
-          <Form.Item 
-            label=' '
-          >
-              <Button 
-                type="primary" 
-                htmlType="submit"
-              >
-                新增
-            </Button>
+          <Form.Item wrapperCol={{ offset: 16  }}>
+                <Button 
+                  type="primary" 
+                  htmlType="submit"
+                  size="large"
+                >
+                  新增
+              </Button>
             {/* <Button type="primary" htmlType="submit">
                 Submit
             </Button> */}
