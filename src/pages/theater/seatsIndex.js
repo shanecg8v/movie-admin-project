@@ -162,8 +162,8 @@ const Seats = () => {
             key: seat.seatNumber,
             name: seat.seatNumber,
             value: [
-              (seat.y - 1) * (seatSize + seatGap) + seatOffsetX,
-              (maxRows - seat.x) * (seatSize + seatGap) + seatOffsetY,
+              (seat.x - 1) * (seatSize + seatGap) + seatOffsetX,
+              (maxRows - seat.y) * (seatSize + seatGap) + seatOffsetY,
             ],
           })),
         },  
