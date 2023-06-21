@@ -71,8 +71,8 @@ const Seats = () => {
   const seatGap = 30
   const seatOffsetX = 0
   const seatOffsetY = 0
-  const maxRows = 9
-  const maxColumns = 13
+  const maxRows = 20
+  const maxColumns = 20
 
   const handleSeatClick = (seatNumber) => {
     setSeatData((prevSeatData) =>
@@ -162,8 +162,8 @@ const Seats = () => {
             key: seat.seatNumber,
             name: seat.seatNumber,
             value: [
-              (seat.y - 1) * (seatSize + seatGap) + seatOffsetX,
-              (maxRows - seat.x) * (seatSize + seatGap) + seatOffsetY,
+              (seat.x - 1) * (seatSize + seatGap) + seatOffsetX,
+              (maxRows - seat.y) * (seatSize + seatGap) + seatOffsetY,
             ],
           })),
         },  
