@@ -1,10 +1,10 @@
 import { Button, message, Input, Form, Upload } from "antd"
 import { PlusOutlined } from '@ant-design/icons';
 import { apiTheater } from "@/api";
-import { useNavigate  } from "react-router-dom";
+import { useNavigate, useLocation } from "react-router-dom";
 
 
-const { postTheater, postTheaterImg } = apiTheater;
+const { postTheater, postTheaterImg, patchTheater } = apiTheater;
 const { TextArea } = Input;
 
 const TheaterEdit = (props) => {
@@ -12,13 +12,17 @@ const TheaterEdit = (props) => {
   const navigate = useNavigate();
   const { isEditMode, initialValues } = props
 
+  const location = useLocation();
+  const searchParams = new URLSearchParams(location.search);
+  const mode = searchParams.get('mode')
+
   const normFile = (e) => {
     if (Array.isArray(e)) {
       return e;
     }
     return e?.fileList;
   };
-  const onFinish = async (values) => {
+  const addDate = async (values) => {
 
     const { img } = values;  
     
@@ -48,6 +52,36 @@ const TheaterEdit = (props) => {
 
   }
 
+  const updateDate = async (values) => {
+
+    const { img } = values;  
+    
+    if(Array.isArray(img)) {
+
+      const formData = new FormData();
+
+      img.forEach((file) => {
+        formData.append('file', file.originFileObj);
+      });
+
+      const { data:{ fileUrl } } = await postTheaterImg(formData)
+      delete values.fileList
+      values.img = fileUrl
+    }
+
+
+    try {
+      await patchTheater(values)
+    } catch (error) {
+      message.error('更新失敗')
+      return console.log('error', error) 
+    }
+
+    message.success("更新成功");
+    navigate('/');
+
+  }
+
   return (
     <>
       <div className="input-tb">
@@ -62,8 +96,13 @@ const TheaterEdit = (props) => {
             offset: 1, 
             flex: 1,
           }}
-          onFinish={onFinish}
+          onFinish={ mode === 'add' ? addDate : updateDate}
         >
+           <Form.Item 
+              hidden
+              name="_id"
+           >
+           </Form.Item>
           <Form.Item 
             name="name"
             label={<span className="fs-5">影城</span>}
@@ -120,16 +159,13 @@ const TheaterEdit = (props) => {
             <TextArea rows={4} />
           </Form.Item>
           <Form.Item wrapperCol={{ offset: 16  }}>
-                <Button 
-                  type="primary" 
-                  htmlType="submit"
-                  size="large"
-                >
-                  新增
-              </Button>
-            {/* <Button type="primary" htmlType="submit">
-                Submit
-            </Button> */}
+            <Button 
+              type="primary" 
+              htmlType="submit"
+              size="large"
+            >
+              {mode === 'add' ? '新增' : '更新'}
+            </Button>
           </Form.Item>
         </Form>
       </div>

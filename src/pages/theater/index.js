@@ -2,7 +2,6 @@ import { Button, Table, Layout } from "antd"
 import { useEffect, useState } from "react";
 import { apiTheater } from '@/api';
 import TheaterEdit from './Components/TheaterEdit'
-import _ from 'lodash'
 import { Link } from "react-router-dom";
 const { Content } = Layout;
 
@@ -33,9 +32,6 @@ const Theater = () => {
         console.log('錯誤')
       }
     })
-
-    // setIsModalOpen(true)
-    
   }
 
   const columns = [
@@ -108,7 +104,7 @@ const Theater = () => {
               className="float-end m-3"
               size="large"
             >
-              <Link to="/theaterEdit">新增影城</Link>
+              <Link to="/theaterEdit?mode=add">新增影城</Link>
           </Button>
           <Table 
             rowClassName={() => 'editable-row'}

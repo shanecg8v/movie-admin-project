@@ -31,12 +31,12 @@ export const postTheater = (props) => {
   });
 };
 
-export const patchTheater = (props) => {
-  console.log(props)
+export const patchTheater = (data) => {
+  console.log(data)
   return axios({
-    url: `/admin/theaters/${props.id}`,
+    url: `/admin/theaters/${data._id}`,
     method: 'patch',
-    ...props,
+    data
   });
 };
 
@@ -98,9 +98,3 @@ export const patchRoom = (data) => {
     data
   });
 };
-
-
-
-
-
-
