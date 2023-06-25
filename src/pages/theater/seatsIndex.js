@@ -67,12 +67,13 @@ const Seats = () => {
     })
   }
 
-  const seatSize = 50
+  const seatSize = 32 
   const seatGap = 30
-  const seatOffsetX = 0
-  const seatOffsetY = 0
+  const seatOffsetX = 100  
+  const seatOffsetY = -350
+
   const maxRows = 20
-  const maxColumns = 20
+  const maxColumns = 18
 
   const handleSeatClick = (seatNumber) => {
     setSeatData((prevSeatData) =>
@@ -136,12 +137,18 @@ const Seats = () => {
         show: false,
         min: 0,
         max: seatSize * maxColumns + seatGap * (maxColumns - 1) + seatOffsetX,
+        axisLabel: {
+          align: 'center' 
+        }
       },
       yAxis: { 
         type: 'value',
         show: false,
         min: 0,
         max: seatSize * maxRows + seatGap * (maxRows - 1) + seatOffsetY,
+        axisLabel: {
+          align: 'center' 
+        }
       },
       tooltip: {
         trigger: 'item',
@@ -162,14 +169,11 @@ const Seats = () => {
             key: seat.seatNumber,
             name: seat.seatNumber,
             value: [
-              (seat.x - 1) * (seatSize + seatGap) + seatOffsetX,
+              (seat.x - 1) * (seatSize + seatGap) + seatOffsetX ,
               (maxRows - seat.y) * (seatSize + seatGap) + seatOffsetY,
             ],
           })),
         },  
-        // {
-        //   click: (qqq)=> console.log(21313, qqq)
-        // }
       ],
     };
     return option;
