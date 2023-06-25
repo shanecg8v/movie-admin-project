@@ -120,20 +120,20 @@ const MovieEdit = ({ data, onClose }) => {
 
   return (
     <Form form={form} labelCol={{ span: 4 }} wrapperCol={{ span: 20 }} layout="horizontal" onFinish={onFinish}>
-      <Form.Item label="是否上架" name="isAvaliableL" initialValue={data.isAvaliableL || false} rules={[validateRequire]} hasFeedback={true}>
-        <Switch />
+      <Form.Item label="是否上架" name="isAvaliableL" rules={[validateRequire]} hasFeedback={true}>
+        <Switch defaultChecked={data.isAvaliableL || false}/>
       </Form.Item>
       <Form.Item label="電影海報url" name="imgUrl" initialValue={data.imgUrl} rules={[validateRequire]} hasFeedback={true}>
         <Input />
       </Form.Item>
 
-      <Form.Item label="電影預告片url" name="videoUrl" initialValue={data.videoUrl} rules={[validateRequire]} hasFeedback={true}>
+      <Form.Item label="電影預告片YT Id" name="videoUrl" initialValue={data.videoUrl} rules={[validateRequire]} hasFeedback={true}>
         <Input />
       </Form.Item>
 
-      <Form.Item label="Dragger" valuePropName='fileList' getValueFromEvent={normFile}>
+      {/* <Form.Item label="Dragger" valuePropName='fileList' getValueFromEvent={normFile}>
         <UploadVideo />
-      </Form.Item>
+      </Form.Item> */}
 
       <Form.Item label="電影中文名稱" name="movieCName" initialValue={data.movieCName} rules={[validateRequire]} hasFeedback={true}>
         <Input />
